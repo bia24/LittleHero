@@ -1,0 +1,23 @@
+{
+	"keyboardEntities":
+	[
+		{
+			"id":0,
+			"up":"W",
+			"down":"S",
+			"left":"L",
+			"right":"D",
+			"attack":"J",
+			"jump":"K"
+		},
+		{
+			"id":1,
+			"up":"UpArrow",
+			"down":"DownArrow",
+			"left":"LeftArrow",
+			"right":"RightArrow",
+			"attack":"Keypad1",
+			"jump":"Keypad2"
+		}
+	]
+}

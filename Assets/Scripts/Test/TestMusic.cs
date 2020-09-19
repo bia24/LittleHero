@@ -27,9 +27,9 @@ public class TestMusic : MonoBehaviour
             source.PlayOneShot(clip2,0.1f);
             Debug.Log(source.isPlaying);
         }
-        if (Time.frameCount % 120 == 0)
-        {
-            Debug.Log("main : " +source.isPlaying);
-        }
+        //if (Time.frameCount % 480 == 0)
+        //{
+        //    Debug.Log("main : " +source.isPlaying);
+        //}
     }
 }

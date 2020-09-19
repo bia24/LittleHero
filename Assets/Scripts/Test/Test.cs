@@ -5,15 +5,30 @@ using SGModule;
 
 public class Test : MonoBehaviour
 {
+   public GameObject go = null;
     // Start is called before the first frame update
     void Start()
     {
-       TextAsset t=  AssetManager.instance.LoadObject<TextAsset>("hello");
-        Debug.Log("i got it");
+        go.SetActive(false);
     }
 
     private void Update()
     {
-        Debug.Log("lloop[[");
+        if (Input.GetMouseButtonDown(0))
+        {
+            show();
+        }
     }
+
+    private void show()
+    {
+        go.SetActive(true);
+        Debug.Log("show");
+        Debug.Log("show");
+        Debug.Log("show");
+        Debug.Log("show");
+        Debug.Log("show");
+        Debug.Log("show");
+    }
+ 
 }

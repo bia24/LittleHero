@@ -20,7 +20,7 @@ public class TestAnimBind : MonoBehaviour
             GameObject clone= GameObject.Instantiate(go);
             clone.name = clone.name + "_" + count;
             count++;
-            AnimManager.instance.BindAnimCallBack<Player3>(clone.GetComponent<Animator>());
+            AnimManager.Instance.BindAnimCallBack<Player3>(clone.GetComponent<Animator>());
         }
     }
 }

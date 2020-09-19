@@ -1,0 +1,20 @@
+{
+    "DataPathList": [
+        {
+            "DataName": "SoundName",
+            "DataPath": "Configs/SoundName"
+        },
+        {
+			"DataName":"GameSettings",
+			"DataPath":"Configs/GameSettings"
+		},
+		{
+			"DataName":"SoundSettings",
+			"DataPath":"Configs/SoundSettings"
+		},
+		{
+			"DataName":"KeyboardSettings",
+			"DataPath":"Configs/KeyboardSettings"
+		}
+    ]
+}

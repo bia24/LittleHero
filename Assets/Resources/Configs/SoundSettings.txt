@@ -1,0 +1,6 @@
+{
+	"soundVolume":0.2,
+	"soundEffectVolume":0.5,
+	"soundTrigger":1,
+	"soundEffectTrigger":1
+}

@@ -14,7 +14,7 @@ namespace SGModule
         /// <summary>
         /// 泛型T实例
         /// </summary>
-        public static T instance
+        public static T Instance
         {
             get { return _instance; }
         }

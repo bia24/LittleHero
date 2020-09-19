@@ -18,6 +18,7 @@ namespace SGModule
 
         public override void StartTask(LoaderInParam param)
         {
+            base.StartTask(param);
             StartCoroutine("Task", param);
         }
 
@@ -40,7 +41,7 @@ namespace SGModule
             //回调函数执行
             p.Callback.Invoke(www.text);
             //向数据管理器中加入缓存
-            DataManager.instance.AddDataCache(p.Url, www.text);
+            DataManager.Instance.AddDataCache(p.Url, www.text);
             //下载器完成任务
             FinishTask();
         }

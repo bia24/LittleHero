@@ -14,7 +14,10 @@ namespace SGModule
         /// 下载器开启任务
         /// </summary>
         /// <param name="url"></param>
-        public abstract void StartTask(LoaderInParam param);
+        public virtual void StartTask(LoaderInParam param)
+        {
+            LoaderManager.Instance.LoaderCount++;
+        }
 
         /// <summary>
         /// 下载器初始化
@@ -28,6 +31,7 @@ namespace SGModule
         public virtual void FinishTask()
         {
             Destroy(this);
+            LoaderManager.Instance.LoaderCount--;
         }
         
     }

@@ -12,9 +12,11 @@ namespace SGModule
        
         public override void StartTask(LoaderInParam param)
         {
+            base.StartTask(param);
+            
             Debug.Log("Start SyncLoading asset from " + param.Url);
             //从resources文件夹中加载
-            string context = AssetManager.instance.LoadObject<TextAsset>(param.Url).text;
+            string context = AssetManager.Instance.LoadObject<TextAsset>(param.Url).text;
             if (context == null)
             {
                 Debug.LogError("syncloading from "+param.Url+" failed!!");
@@ -25,7 +27,7 @@ namespace SGModule
             //调用回调函数
             param.Callback.Invoke(context);
             //向数据管理器中加入缓存
-            DataManager.instance.AddDataCache(param.Url,context );
+            DataManager.Instance.AddDataCache(param.Url,context );
             //本下载器任务完成
             FinishTask();
             

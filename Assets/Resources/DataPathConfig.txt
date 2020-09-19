@@ -1,9 +1,0 @@
-{
-    "DataPathList": [
-        {
-            "DataName": "input",
-            "DataPath": "Input/input"
-        }
-        
-    ]
-}

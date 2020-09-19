@@ -34,7 +34,7 @@ namespace SGModule
                 if (pools[name].Empty())
                 {
                     //池子存在，但是没有对象可以使用了，实例化一个对象
-                    go = AssetManager.instance.LoadGameObject(gameObjectPrefabsResourcePath+"/"+name);
+                    go = AssetManager.Instance.LoadGameObject(gameObjectPrefabsResourcePath+"/"+name);
                     if (go == null)
                     {
                         Debug.LogError("prefab not exists in resources : "+name);
@@ -46,7 +46,7 @@ namespace SGModule
             }
             else //池子不存在
             {
-                go= AssetManager.instance.LoadGameObject(gameObjectPrefabsResourcePath + "/" + name);
+                go= AssetManager.Instance.LoadGameObject(gameObjectPrefabsResourcePath + "/" + name);
                 if (go == null)
                 {
                     Debug.LogError("prefab not exists in resources : " + name);

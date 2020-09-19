@@ -8,14 +8,14 @@ public class TestObjectPool : MonoBehaviour
     GameObject f;
     private void Start()
     {
-        f=PoolManager.instance.getPrefab("father");
+        f=PoolManager.Instance.getPrefab("father");
     }
     // Update is called once per frame
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            PoolManager.instance.getPrefab("player",f.transform);
+            PoolManager.Instance.getPrefab("player",f.transform);
         }
         if (Input.GetMouseButtonDown(1))
         {
@@ -23,7 +23,7 @@ public class TestObjectPool : MonoBehaviour
             {
                 if (f.transform.GetChild(i).gameObject.activeSelf)
                 {
-                    PoolManager.instance.RevertPool("player", f.transform.GetChild(i).gameObject);
+                    PoolManager.Instance.RevertPool("player", f.transform.GetChild(i).gameObject);
                     break;
                 }
             }

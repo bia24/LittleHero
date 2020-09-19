@@ -23,12 +23,12 @@ public class TestLoadConfig : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            DataManager.instance.SaveData("input","hahah new data");
+            DataManager.Instance.SaveData("input","hahah new data");
         }
 
         if (Input.GetMouseButtonDown(1))
         {
-            DataManager.instance.LoadData("input", Callback);
+            DataManager.Instance.LoadData("input", Callback);
         }
     }
 }

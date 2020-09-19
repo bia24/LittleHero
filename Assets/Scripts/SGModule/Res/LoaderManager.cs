@@ -13,6 +13,10 @@ namespace SGModule {
         /// 挂载下载器的空物体
         /// </summary>
         private GameObject loaderGo;
+        /// <summary>
+        /// 当前正在执行任务的下载器数目
+        /// </summary>
+        public int LoaderCount { get; set; }
        
         public enum LoaderType
         {
@@ -47,6 +51,11 @@ namespace SGModule {
             return loader;
         }
    
+
+        public bool EmptyLoadTask()
+        {
+            return LoaderCount == 0 ? true : false;
+        }
     }
 
 }

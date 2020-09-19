@@ -7,10 +7,6 @@ namespace SGModule
     public class EventData
     {
         /// <summary>
-        /// 空参数类
-        /// </summary>
-        public static EventData nullArg = new EventData(null, null);
-        /// <summary>
         /// 参数封装
         /// </summary>
         public object Param { get; set; }

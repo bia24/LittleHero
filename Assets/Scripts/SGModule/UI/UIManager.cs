@@ -21,7 +21,7 @@ namespace SGModule
         /// <summary>
         /// UIGameObject预制体名称
         /// </summary>
-        private static string UIObjectName = "UI";
+        private static string UIRootObjectName = "UI";
 
         /// <summary>
         /// 所有Panel的索引
@@ -45,7 +45,7 @@ namespace SGModule
         /// <summary>
         /// UI根引用
         /// </summary>
-        private GameObject UIObject { get; }   //只读属性，只能在构造函数中进行初始化
+        private GameObject UIRootObject { get; }   //只读属性，只能在构造函数中进行初始化
         /// <summary>
         /// Canvas引用
         /// </summary>
@@ -76,7 +76,7 @@ namespace SGModule
         public AudioSource Source { get; }
 
         /// <summary>
-        ///  当前屏幕的分辨率
+        ///  当前屏幕的分辨率，只读属性，不会自动赋值
         /// </summary>
         public Vector2 CurrentScreenResolution => new Vector2(Screen.width, Screen.height);
         /// <summary>
@@ -87,18 +87,20 @@ namespace SGModule
        
         public UIManager()
         {
-            UIObject = AssetManager.instance.LoadGameObject(prefabResoucePath+"/"+UIObjectName);
-            UIObject.name = UIObjectName;
-            GameObject.DontDestroyOnLoad(UIObject);
+            UIRootObject = AssetManager.Instance.LoadGameObject(prefabResoucePath+"/"+UIRootObjectName);
+            UIRootObject.name = UIRootObjectName;
+            GameObject.DontDestroyOnLoad(UIRootObject);
 
-            UICanvas = UIObject.transform.Find("CanvasRoot");
+            UICanvas = UIRootObject.transform.Find("CanvasRoot");
             Bot = UICanvas.Find("Bot");
             Mid = UICanvas.Find("Mid");
             Top = UICanvas.Find("Top");
             ThreeD = UICanvas.Find("ThreeD");
 
             UIScaler = UICanvas.GetComponent<CanvasScaler>();
-            Source = UIObject.GetComponent<AudioSource>();
+            Source = UIRootObject.GetComponent<AudioSource>();
+            if (Source == null)
+                Source = UIRootObject.AddComponent<AudioSource>();
 
             Screen.SetResolution((int)RefScreenResolution.x, (int)RefScreenResolution.y,false);
 
@@ -117,7 +119,7 @@ namespace SGModule
                 //还未加载过，从Resources中加载prefab
                 string path = prefabResoucePath + "/" + name;
                 //用Asset加载，不使用对象池
-                GameObject go=AssetManager.instance.LoadGameObject(path);
+                GameObject go=AssetManager.Instance.LoadGameObject(path);
                 go.name = name;
                 p = go.AddComponent<T>();
 
@@ -162,15 +164,27 @@ namespace SGModule
         }
 
         /// <summary>
-        /// 获取一个面板
+        /// 获取一个挂载有UIBase的panel，必须是已经加载过的，不然返回空
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public UIBase GetPanel(string name)
+        public T GetPanel<T>(string name) where T : UIBase
         {
             UIBase p = null;
             panels.TryGetValue(name, out p);
-            return p;
+            return p as T;
+        }
+        /// <summary>
+        /// 从Resources文件夹中实例一个UI预制体
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public GameObject InstantiateUIPrefab(string name)
+        {
+            GameObject go = AssetManager.Instance.LoadGameObject(prefabResoucePath+"/"+name);
+            if (go != null)
+                go.name = name;
+            return go;
         }
 
     }

@@ -12,8 +12,9 @@ namespace SGModule
     public delegate void EventCallBack(EventData eventData);
 
     /// <summary>
-    /// 加载完成的回调函数
+    /// 加载器完成任务时的回调函数
     /// </summary>
     /// <param name="loadData"></param>
     public delegate void LoadCompleteCallBack(string  context);
+    
 }

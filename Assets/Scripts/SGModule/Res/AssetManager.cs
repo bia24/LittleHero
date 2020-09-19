@@ -5,8 +5,8 @@ using UnityEngine;
 namespace SGModule {
     /// <summary>
     /// 资源管理器，加载资源到内存中并缓存
-    /// now：仅支持Resources加载
-    /// todo：ab加载
+    /// now：本框架中，除了配置文件需要从persistent文件夹中加载，其它所有资源都从Resources中直接加载。适合快速开发一款游戏
+    /// todo：ab资源的加载，框架需要重新修改，针对资源加载这方面。异步下载，异步加载等
     /// </summary>
     public class AssetManager : Singleton<AssetManager>
     {
@@ -89,7 +89,7 @@ namespace SGModule {
         }
         
         /// <summary>
-        /// 场景切换时，会调用resources.unloadunuseAssets
+        /// 场景切换时，unity会对除了加载进的ab包资源不清空，其它资源都清空
         /// 如果缓存一直有引用，会造成这些资源一直存在内存
         /// 因此，为了节约内存，在场景切换前，要清空缓存。
         /// </summary>

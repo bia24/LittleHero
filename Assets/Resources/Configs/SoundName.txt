@@ -1,0 +1,27 @@
+{
+	"soundEntitisList":
+	[
+		{
+			"type":"MainBGM",
+			"name":"Main_BGM"
+		},
+		{
+			"type":"Click01",
+			"name":"ui_sword"
+		},
+		{
+			"type":"Click02",
+			"name":"ui_button_Closedoor"
+		},
+		{
+			"type":"Click03",
+			"name":"ui_button_click_pao"
+		},
+		{
+			"type":"Appear",
+			"name":"Appear"
+		}
+
+	]
+	
+}

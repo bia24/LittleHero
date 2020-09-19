@@ -16,7 +16,7 @@ namespace SGModule {
         /// <summary>
         /// 数据路径配置文件
         /// </summary>
-        private static string dataPathConfigResourcePath = "DataPathConfig";
+        private static string dataPathConfigResourcePath = "Configs/DataPathConfig";
         /// <summary>
         /// 数据路径集合
         /// dataName-reousrcesPath
@@ -45,7 +45,7 @@ namespace SGModule {
         public DataManager()
         {
             //初始化，从resources文件夹中读取数据名称-路径配置文件
-            TextAsset t= AssetManager.instance.LoadObject<TextAsset>(dataPathConfigResourcePath);
+            TextAsset t= AssetManager.Instance.LoadObject<TextAsset>(dataPathConfigResourcePath);
             if (t == null)
             {
                 Debug.LogError("DataPath Config load faild!");
@@ -59,12 +59,16 @@ namespace SGModule {
             }
         }
 
+        public void Init()
+        {
+
+        }
         /// <summary>
         /// 加载数据
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="isPersistant">默认会在persistent文件夹中缓存。当为false时，资源可通过配置文件修改，而不进行persistent文件夹缓存</param>
         /// <returns></returns>
-        public void LoadData(string dataName, LoadCompleteCallBack callback)
+        public void LoadData(string dataName, LoadCompleteCallBack callback,bool isPersistent = true)
         {
             string path = null; //ResourcesPath 无扩展名
             if(!dataPaths.TryGetValue(dataName,out path))
@@ -88,22 +92,31 @@ namespace SGModule {
                 return;
             }
 
+            //如果不需要缓存进入本地文件，说明该文件每次都需要从resource中加载，可用配置文件修改并配置
+            if (isPersistent == false)
+            {
+                //从resources中同步读取
+                Loader l = LoaderManager.Instance.GetLoader(LoaderManager.LoaderType.Sync);
+                l.StartTask(new LoaderInParam(path, callback)); //完成后，缓存中已经有数据
+                return;
+            }
+
             //缓存区不存在或者被清除，或者非第一次启动游戏(缓存区为空)
             //从本地文件夹中找
-
+            //C:/Users/Administrator/AppData/LocalLow/DefaultCompany/LittleHero
             //本地能找到
             string localPath = Application.persistentDataPath + "/" + path + ".txt";
             if (File.Exists(localPath))
             {
                 //从persistent文件夹中用异步加载方式读取
-                Loader l = LoaderManager.instance.GetLoader(LoaderManager.LoaderType.Async);
+                Loader l = LoaderManager.Instance.GetLoader(LoaderManager.LoaderType.Async);
                 LoaderInParam param = new LoaderInParam(localPath, callback);
                 l.StartTask(param);
             }
             else //本地无法找到，从resources中加载初始数据
             {
                 //从resources中同步读取
-                Loader l = LoaderManager.instance.GetLoader(LoaderManager.LoaderType.Sync);
+                Loader l = LoaderManager.Instance.GetLoader(LoaderManager.LoaderType.Sync);
                 l.StartTask(new LoaderInParam(path,callback)); //完成后，缓存中已经有数据
 
                 //写入persistent文件夹

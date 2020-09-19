@@ -12,14 +12,14 @@ namespace SGModule
         /// <summary>
         /// 事件中心回调函数索引
         /// </summary>
-        private Dictionary<EventType, EventCallBack> callBacks   = new Dictionary<EventType, EventCallBack>();
+        private Dictionary<SGEventType, EventCallBack> callBacks   = new Dictionary<SGEventType, EventCallBack>();
 
         /// <summary>
         /// 事件监听注册
         /// </summary>
         /// <param name="type"></param>
         /// <param name="callback"></param>
-        public void RegistListener(EventType type,EventCallBack callback)
+        public void RegistListener(SGEventType type,EventCallBack callback)
         {
             if(callback==null)
             {
@@ -45,7 +45,7 @@ namespace SGModule
         /// </summary>
         /// <param name="type"></param>
         /// <param name="data"></param>
-        public void SendEvent(EventType type,EventData data)
+        public void SendEvent(SGEventType type,EventData data)
         {
             EventCallBack callback = null;
 
@@ -60,7 +60,7 @@ namespace SGModule
         /// </summary>
         /// <param name="type"></param>
         /// <param name="callback"></param>
-        public void RemoveListener(EventType type,EventCallBack callback)
+        public void RemoveListener(SGEventType type,EventCallBack callback)
         {
             if (callBacks.ContainsKey(type))
             {
@@ -74,7 +74,7 @@ namespace SGModule
         /// 删除指定事件的所有监听回调
         /// </summary>
         /// <param name="type"></param>
-        public void RemoveEvent(EventType type)
+        public void RemoveEvent(SGEventType type)
         {
             if (callBacks.ContainsKey(type))
             {

@@ -40,7 +40,7 @@ namespace SGModule
         /// <summary>
         /// 出现和消失的类型
         /// </summary>
-        private ShowType showType=ShowType.Normal;
+        protected ShowType showType=ShowType.Normal;
 
         /// <summary>
         /// 面板初始化
@@ -48,26 +48,67 @@ namespace SGModule
         public virtual void Init()
         {
             //递归获得所有子物体，加入集合中
-            FindChildren(gameObject.transform, widgets);
+            FindChildren(gameObject.transform);
 
             //给panel增加group组件
-            group = gameObject.AddComponent<CanvasGroup>(); 
+            group = gameObject.AddComponent<CanvasGroup>();
+
+            //修改ShowType类型
+            SetShowType();
+
+            //动态初始化
+            DynamicInit();
         }
 
         /// <summary>
         /// 递归查找所有子物体
         /// </summary>
-        private void FindChildren(Transform parent,Dictionary<string,GameObject>outList)
+        private void FindChildren(Transform root)
         {
-            if (parent.childCount == 0)
-                return; 
+            if (root.gameObject.tag.Equals("NotUI")||root==null)
+                return;
+            widgets.Add(root.name, root.gameObject);
+
+            for(int i = 0; i < root.childCount; i++)
+            {
+                GameObject child = root.GetChild(i).gameObject;
+                //递归
+                FindChildren(child.transform);
+            }
+        }
+        /// <summary>
+        /// 递归设置子物体name后缀，并加入到组件集合中
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="outList"></param>
+        /// <param name="append"></param>
+        protected void SetChildrenName(Transform parent,string append)
+        {
+            if (parent == null || parent.gameObject.tag.Equals("NotUI"))
+                return;
+
+            parent.name = parent.name + append;
+            widgets.Add(parent.name, parent.gameObject);
+            
             for(int i = 0; i < parent.childCount; i++)
             {
-                GameObject child = parent.GetChild(i).gameObject;
-                outList.Add(child.name, child);
-                //递归查找
-                FindChildren(child.transform, outList);
+                SetChildrenName(parent.transform.GetChild(i), append);
             }
+        }
+
+        /// <summary>
+        /// 子类修改显示类型
+        /// </summary>
+        protected virtual void SetShowType()
+        {
+        }
+
+        /// <summary>
+        /// 需要动态加载的UI组件初始化
+        /// </summary>
+        protected virtual void DynamicInit()
+        {
+
         }
 
         /// <summary>
@@ -82,6 +123,18 @@ namespace SGModule
             if (!widgets.TryGetValue(name, out widget))
                 return null;
             return widget.GetComponent<T>();
+        }
+
+        /// <summary>
+        /// 获取一个组件
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected GameObject GetWidget(string name)
+        {
+            GameObject widget = null;
+            widgets.TryGetValue(name, out widget);
+            return widget;
         }
 
         /// <summary>
@@ -125,7 +178,7 @@ namespace SGModule
                     break;
                 case ShowType.Fade:
                     group.DOFade(0f, 0f);
-                    group.DOFade(1f, 3f).SetUpdate(true);
+                    group.DOFade(1f, 1f).SetUpdate(true);
                     break;
             }
 
@@ -148,7 +201,7 @@ namespace SGModule
                     break;
                 case ShowType.Fade:
                     group.DOFade(1f, 0f);
-                    group.DOFade(0f, 1f).SetUpdate(true).OnComplete(()=>
+                    group.DOFade(0f, 5f).SetUpdate(true).OnComplete(()=>
                     {
                         action?.Invoke();
                         gameObject.SetActive(false);
