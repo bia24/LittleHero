@@ -1,0 +1,20 @@
+{
+	"levels":
+	[
+		{
+			"id":1,
+			"bgName":"BG1",
+			"soundType":"NormalBattle"
+		},
+		{
+			"id":2,
+			"bgName":"BG2",
+			"soundType":"NormalBattle"
+		},
+		{
+			"id":3,
+			"bgName":"BG3",
+			"soundType":"NormalBattle"
+		}
+	]
+}

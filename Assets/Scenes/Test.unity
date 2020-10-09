@@ -258,7 +258,7 @@ Transform:
   m_GameObject: {fileID: 658484428}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 951e6772cdc81a14d8597d9ed7f3ae68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  go: {fileID: 360424082}
+  anim: {fileID: 7400000, guid: 3702147280ba26b4ba810aab7be2b3dc, type: 2}
 --- !u!114 &658484432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -552,7 +552,7 @@ Camera:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 3
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2

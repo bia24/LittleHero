@@ -1,0 +1,21 @@
+{
+	"characterUIEntities":
+	[
+		{
+			"id":0,
+			"name":"未选择",
+			"iconName":"iconX"
+		},
+		{
+			"id":1,
+			"name":"小马",
+			"iconName":"HeadIcon_Player1"
+		},
+		{
+			"id":2,
+			"name":"小亮",
+			"iconName":"HeadIcon_Player2"
+		}
+		
+	]
+}

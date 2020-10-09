@@ -4,10 +4,6 @@
             "DataName": "SoundName",
             "DataPath": "Configs/SoundName"
         },
-        {
-			"DataName":"GameSettings",
-			"DataPath":"Configs/GameSettings"
-		},
 		{
 			"DataName":"SoundSettings",
 			"DataPath":"Configs/SoundSettings"
@@ -15,6 +11,38 @@
 		{
 			"DataName":"KeyboardSettings",
 			"DataPath":"Configs/KeyboardSettings"
+		},
+		{
+			"DataName":"UICharacter",
+			"DataPath":"Configs/CharacterUIInfo"
+		},
+		{
+			"DataName":"BattleCharacter",
+			"DataPath":"Configs/BattleCharacterInfos"
+		},
+		{
+			"DataName":"Skill",
+			"DataPath":"Configs/SkillInfos"
+		},
+		{
+			"DataName":"BattleParam",
+			"DataPath":"Configs/BattleParam"
+		},
+		{
+			"DataName":"LevelInfo",
+			"DataPath":"Configs/Level"
+		},
+		{
+			"DataName":"EnemyGenPlan",
+			"DataPath":"Configs/EnemyGenPlan"
+		},
+		{
+			"DataName":"Combo",
+			"DataPath":"Configs/ComboInfos"
+		},
+		{
+			"DataName":"Dialogues",
+			"DataPath":"Configs/Dialogues"
 		}
     ]
 }

@@ -61,7 +61,7 @@ namespace SGModule
         }
 
         /// <summary>
-        /// 递归查找所有子物体
+        /// 递归查找自身以及子物体
         /// </summary>
         private void FindChildren(Transform root)
         {
@@ -178,7 +178,7 @@ namespace SGModule
                     break;
                 case ShowType.Fade:
                     group.DOFade(0f, 0f);
-                    group.DOFade(1f, 1f).SetUpdate(true);
+                    group.DOFade(1f, 0.2f).SetUpdate(true);
                     break;
             }
 
@@ -201,10 +201,10 @@ namespace SGModule
                     break;
                 case ShowType.Fade:
                     group.DOFade(1f, 0f);
-                    group.DOFade(0f, 5f).SetUpdate(true).OnComplete(()=>
+                    group.DOFade(0f, 0.2f).SetEase(Ease.Linear).SetUpdate(true).OnComplete(()=>
                     {
-                        action?.Invoke();
                         gameObject.SetActive(false);
+                        action?.Invoke();
                     }
                     );
                     break;

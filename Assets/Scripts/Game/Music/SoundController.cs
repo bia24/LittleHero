@@ -23,7 +23,6 @@ public class SoundController : Singleton<SoundController>
         EventCenter.Instance.RegistListener(SGEventType.SoundPlay, PlaySoundListener);
         EventCenter.Instance.RegistListener(SGEventType.SoundTrigger, SetSoundTriggerListener);
         EventCenter.Instance.RegistListener(SGEventType.SoundEffectTrigger, SetSoundEffectTriggerListener);
-        EventCenter.Instance.RegistListener(SGEventType.SoundSettingsGet, SoundSettingsGetListener);
         EventCenter.Instance.RegistListener(SGEventType.SoundVolumeChange, SoundVolumeChangeListener);
         EventCenter.Instance.RegistListener(SGEventType.SoundEffectVolumeChange, SoundEffectVolumeChangeListener);
     }
@@ -36,7 +35,8 @@ public class SoundController : Singleton<SoundController>
     /// <param name="data"></param>
     private void PlayBGMListener(EventData data)
     {
-         MusicManager.Instance.Play(MusicManager.Instance.MainSource, "MainBGM", true,true);   
+        string typeName = data.Param as string;
+         MusicManager.Instance.Play(MusicManager.Instance.MainSource, typeName, true,true);   
     }
 
     /// <summary>
@@ -57,11 +57,13 @@ public class SoundController : Singleton<SoundController>
         AudioSource source = param.source;
         bool isBreak = param.isBreak;
         bool isLoop = param.isLoop;
+        bool isCustomVolume = param.isCustomVolume;
+        float customVolumeScale = param.customVolumeScale;
 
         if(source==null )
              Debug.LogError("No audioSource get");
 
-        MusicManager.Instance.Play(source, soundType , isBreak, isLoop);
+        MusicManager.Instance.Play(source, soundType , isBreak, isLoop, isCustomVolume, customVolumeScale);
       
     }
 
@@ -99,14 +101,13 @@ public class SoundController : Singleton<SoundController>
     }
 
     /// <summary>
-    /// 获得音源配置 回调
+    /// 获得音源配置 的副本，用作初始化显示使用
     /// </summary>
     /// <param name="data"></param>
-    private void SoundSettingsGetListener(EventData data)
+    public SoundSettingsEntity GetSoundSettings()
     {
         SoundSettingsEntity sse= MusicManager.Instance.GetSoundSettings();
-        EventCallBack cb = data.Param as EventCallBack;
-        cb?.Invoke(new EventData(sse, null));
+        return sse;
     }
 
   /// <summary>

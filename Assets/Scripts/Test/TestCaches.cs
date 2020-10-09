@@ -18,14 +18,5 @@ public class TestCaches : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            go=Instantiate(go);
-        }
-        if (Input.GetMouseButtonDown(1))
-        {
-            SceneManager.LoadSceneAsync(1);
-           
-        }
     }
 }

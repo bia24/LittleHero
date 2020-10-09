@@ -20,7 +20,37 @@
 		{
 			"type":"Appear",
 			"name":"Appear"
+		},
+		{
+			"type":"NormalBattle",
+			"name":"NormalBattle"
+		},
+		{
+			"type":"Player1_Attack_First",
+			"name":"Player1_Attack_First"
+		},
+		{
+			"type":"Player1_Attack_Second",
+			"name":"Player1_Attack_Second"
+		},
+		{
+			"type":"Player1_Attack_Third",
+			"name":"Player1_Attack_Third"
+		},
+		{
+			"type":"Player1_Run_Attack",
+			"name":"Player1_Run_Attack"
+		},
+		{
+			"type":"Player1_SkillAttack_UpDown",
+			"name":"Player1_SkillAttack_UpDown"
+		},
+		{
+			"type":"Player1_SkillAttack_Sky",
+			"name":"Player1_SkillAttack_Sky"
 		}
+
+		
 
 	]
 	

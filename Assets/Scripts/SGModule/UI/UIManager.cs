@@ -17,11 +17,11 @@ namespace SGModule
         /// <summary>
         /// UI预制体在Resources文件夹中的路径
         /// </summary>
-        private static string prefabResoucePath = "UIPrefabs";
+        private readonly string PREFAB_RESOURCES_PATH = "UIPrefabs";
         /// <summary>
         /// UIGameObject预制体名称
         /// </summary>
-        private static string UIRootObjectName = "UI";
+        private readonly string UIROOT_RESOURCES_PATH = "UI";
 
         /// <summary>
         /// 所有Panel的索引
@@ -87,8 +87,8 @@ namespace SGModule
        
         public UIManager()
         {
-            UIRootObject = AssetManager.Instance.LoadGameObject(prefabResoucePath+"/"+UIRootObjectName);
-            UIRootObject.name = UIRootObjectName;
+            UIRootObject = AssetManager.Instance.LoadGameObject(PREFAB_RESOURCES_PATH+"/"+ UIROOT_RESOURCES_PATH);
+            UIRootObject.name = UIROOT_RESOURCES_PATH;
             GameObject.DontDestroyOnLoad(UIRootObject);
 
             UICanvas = UIRootObject.transform.Find("CanvasRoot");
@@ -117,7 +117,7 @@ namespace SGModule
             if(!panels.TryGetValue(name,out p))
             {
                 //还未加载过，从Resources中加载prefab
-                string path = prefabResoucePath + "/" + name;
+                string path = PREFAB_RESOURCES_PATH + "/" + name;
                 //用Asset加载，不使用对象池
                 GameObject go=AssetManager.Instance.LoadGameObject(path);
                 go.name = name;
@@ -181,7 +181,7 @@ namespace SGModule
         /// <returns></returns>
         public GameObject InstantiateUIPrefab(string name)
         {
-            GameObject go = AssetManager.Instance.LoadGameObject(prefabResoucePath+"/"+name);
+            GameObject go = AssetManager.Instance.LoadGameObject(PREFAB_RESOURCES_PATH+"/"+name);
             if (go != null)
                 go.name = name;
             return go;

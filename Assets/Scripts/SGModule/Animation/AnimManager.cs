@@ -5,6 +5,24 @@ using System;
 
 namespace SGModule
 {
+
+    /// <summary>
+    /// 注册动画回调所需内容的获取接口
+    /// </summary>
+    public interface IAnim
+    {
+        /// <summary>
+        /// 返回一个游戏实体的动画控制器
+        /// </summary>
+        /// <returns></returns>
+        Animator GetAnimator();
+        /// <summary>
+        /// 返回一个游戏实体的动画回调实体集合
+        /// </summary>
+        /// <returns></returns>
+        List<AnimCallBackEntity> GetCallBacks();
+    }
+
     /// <summary>
     /// 使用 Animtor控制器进行动画的调用
     /// </summary>
@@ -21,26 +39,21 @@ namespace SGModule
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="target"></param>
-        public void BindAnimCallBack<T>(Animator target) where T:AnimCallBackController
+        public void BindAnimCallBack(IAnim target) 
         {
-            //给目标上脚本，动画回调都是调用的这个脚本Mono上的函数
-            AnimCallBackController c = target.gameObject.AddComponent<T>();
-            //初始化该脚本
-            c.Init();
-            if (hasBinded.Contains(typeof(T)))
+            if (hasBinded.Contains(target.GetType()))
             {
                 //说明该类型绑定过了，因为同一类型绑定的回调函数都是一致的，
                 //且所有实例对象是共用animationclip的，所以不需要再绑定了，会造成回调函数重复
                 //只要上述给它加上T类型的脚本即可。
-                Debug.Log(target.gameObject.name + " bind animation callback finished. has been binded same callbacks");
+                Debug.Log(target.GetType() + " bind animation callback finished. has been binded same callbacks");
                 return;
             }
-            //填充实体
-            c.FillEntities();
 
             //绑定动画回调函数
-            AnimationClip[] clips = target.runtimeAnimatorController.animationClips;
-            List<AnimCallBackEntity> entities = c.GetCallBackList();
+            //获得动画状态机中的所有动画片段引用
+            AnimationClip[] clips = target.GetAnimator().runtimeAnimatorController.animationClips;
+            List<AnimCallBackEntity> entities =target.GetCallBacks();
             foreach(var e in entities)
             {
                 for(int i = 0; i < clips.Length; i++)
@@ -48,7 +61,7 @@ namespace SGModule
                     if (clips[i].name.Equals(e.AnimName))
                     {
                         AnimationEvent ae = new AnimationEvent();
-                        ae.time = e.Time;
+                        ae.time = clips[i].length * e.NormalizeTime; //用单位比例时间获得实际时间
                         ae.functionName = e.FunName;
                         switch (e.Type)
                         {
@@ -67,18 +80,19 @@ namespace SGModule
                             case AnimEventParamType.Null:
                                 break;
                         }
+                        //给动画片段添加事件，只在运行时有效果
                         clips[i].AddEvent(ae);
                         break;
                     }
                 }
             }
             //将角色动画控制的T类型加入缓存，同一种类型的绑定一次即可
-            hasBinded.Add(typeof(T));
-            Debug.Log(target.gameObject.name + " bind animation callback finished.");
+            hasBinded.Add(target.GetType());
+            Debug.Log(target.GetType() + " bind animation callback finished.");
         }
 
 
-        public void SetBooi(Animator target,string paramName,bool value)
+        public void SetBool(Animator target,string paramName,bool value)
         {
             target.SetBool(paramName, value);
         }
@@ -96,6 +110,50 @@ namespace SGModule
         public void SetTrigger(Animator target, string paramName)
         {
             target.SetTrigger(paramName);
+        }
+        /// <summary>
+        /// 是否状态机正在运行name的动画
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="index"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool IsInThisAnimState(Animator target,int index,string name)
+        {
+            return target.GetCurrentAnimatorStateInfo(index).IsName(name);
+        }
+
+        public float GetCurrentNormalizeTime(Animator target, int index)
+        {
+            return target.GetCurrentAnimatorStateInfo(index).normalizedTime;
+        }
+
+        public bool IsInTransforming(Animator target, int index)
+        {
+            return target.IsInTransition(index);
+        }
+
+        public bool IsInTransforming(Animator target, int index, string name)
+        {
+            return target.GetAnimatorTransitionInfo(0).IsName(name);
+        }
+
+        public bool GetAnimtorBoolParam(Animator target,string name)
+        {
+            return target.GetBool(name);
+        }
+
+        public  AnimationClip GetAnimtionClip(Animator target,int index, string name)
+        {
+            AnimationClip[] sources = target.runtimeAnimatorController.animationClips;
+            foreach (var t in sources)
+            {
+                if (t.name.Equals(name))
+                {
+                    return t;
+                }
+            }
+            return null;
         }
     }
 }

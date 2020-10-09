@@ -23,11 +23,11 @@ namespace SGModule
         /// </summary>
         public string FunName { get; set; }
         /// <summary>
-        /// 回调时间 单位秒
+        /// 回调时间 单位比例时间
         /// </summary>
-        public float Time { get; set; }
+        public float NormalizeTime { get; set; }
 
-        public AnimCallBackEntity(string animName,string funName,float time,AnimEventParamType type=AnimEventParamType.Null, object param=null)
+        public AnimCallBackEntity(string animName,string funName,float normalizeTime,AnimEventParamType type=AnimEventParamType.Null, object param=null)
         {
             Type = type;
 
@@ -51,7 +51,7 @@ namespace SGModule
 
             AnimName = animName;
             FunName = funName;
-            Time = time;
+            NormalizeTime = normalizeTime;
         }
 
         

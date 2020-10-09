@@ -12,7 +12,7 @@ using UnityEngine.UI;
 public class UIGameSettings : UIBase
 {
     /// <summary>
-    /// 存储所有输入框文本引用
+    /// 存储所有输入框文本引用(可见的)
     /// </summary>
     private List<Text> inputFields = new List<Text>();
     /// <summary>
@@ -60,7 +60,7 @@ public class UIGameSettings : UIBase
 
     protected override void SetShowType()
     {
-        showType = ShowType.Fade;
+       
     }
     /// <summary>
     /// 动态加载组件初始化
@@ -90,16 +90,17 @@ public class UIGameSettings : UIBase
     {
         base.Show();
 
-        EventCenter.Instance.SendEvent(SGEventType.PlayerNumberGet,
-            new EventData(new EventCallBack(PlayerNumberGetCallBack), null));
+        //组件显示初始化**
+        //输入框初始化
+        InputFieldVisibleInit();
+        //声源设置初始化
+        SoundSettingsInit();
+        //键盘配置初始化
+        KeyboardConfigInit();
 
-        EventCenter.Instance.SendEvent(SGEventType.SoundSettingsGet,
-            new EventData(new EventCallBack(SoundSettingsGetCallBack), null));
-
-        EventCenter.Instance.SendEvent(SGEventType.KeyboardConfigGet,
-            new EventData(new EventCallBack(KeyboardConfigGetCallBack), null));
-
-      
+        //通知发送**
+        //通知添加 输入框输入 监听
+        EventCenter.Instance.SendEvent(SGEventType.InputFieldListenerAdd, null);
     }
 
     protected override void AddListenerToEventCenter()
@@ -133,10 +134,10 @@ public class UIGameSettings : UIBase
     /// 玩家数目获取
     /// </summary>
     /// <param name="data"></param>
-   private void  PlayerNumberGetCallBack(EventData data)
+   private void  InputFieldVisibleInit()
     {
-        int pn = (int)data.Param;
-        bool visible = pn > 1 ? true : false;
+        int playerNumber = GameController.Instance.GetPlayerNumber();
+        bool visible = playerNumber > 1 ? true : false;
         //人数影响面板可见性
         GetWidget("ControlPanel_Player2").SetActive(visible);
 
@@ -149,17 +150,15 @@ public class UIGameSettings : UIBase
             if (t.gameObject.tag.Equals("Input")&&t.gameObject.activeInHierarchy)
                 inputFields.Add(t);
         }
-
     }
 
     /// <summary>
     /// 音源配置请求 回调
     /// </summary>
     /// <param name="data"></param>
-    private void SoundSettingsGetCallBack(EventData data)
+    private void SoundSettingsInit()
     {
-        SoundSettingsEntity sse = data.Param as SoundSettingsEntity;
-
+        SoundSettingsEntity sse = SoundController.Instance.GetSoundSettings();
         GetWidget<Toggle>("SoundToggleOn").isOn = sse.soundTrigger == 1 ? true : false;
         GetWidget<Toggle>("SoundEffectToggleOn").isOn = sse.soundEffectTrigger == 1 ? true : false;
         GetWidget<Slider>("Slider").value = sse.soundVolume;
@@ -209,23 +208,14 @@ public class UIGameSettings : UIBase
 
 
     /// <summary>
-    /// 键盘输入配置获取 回调
+    /// 键盘配置 显示 初始化
     /// </summary>
     /// <param name="data"></param>
-    private void KeyboardConfigGetCallBack(EventData data)
+    private void KeyboardConfigInit()
     {
-        List<KeyboardEntity> lke = data.Param as List<KeyboardEntity>;
         GameObject player2 = GetWidget("ControlPanel_Player2");
         //玩家1设置
-        KeyboardEntity ke1 = null;
-        foreach (var temp in lke)
-        {
-            if (temp.id == 0)
-            {
-                ke1 = temp;
-                break;
-            }
-        }
+        KeyboardEntity ke1 = InputController.Instance.GetPlayerKeyboardSetting(0);
         GetWidget<Text>("Text_Up").text = ke1.up;
         GetWidget<Text>("Text_Down").text = ke1.down;
         GetWidget<Text>("Text_Left").text = ke1.left;
@@ -236,15 +226,8 @@ public class UIGameSettings : UIBase
         //玩家2设置
         if (player2.activeSelf)
         {
-            KeyboardEntity ke2 = null;
-            foreach (var temp in lke)
-            {
-                if (temp.id == 1)
-                {
-                    ke2 = temp;
-                    break;
-                }
-            }
+            KeyboardEntity ke2 = InputController.Instance.GetPlayerKeyboardSetting(1);
+            
             GetWidget<Text>("Text_Up_Player2").text = ke2.up;
             GetWidget<Text>("Text_Down_Player2").text = ke2.down;
             GetWidget<Text>("Text_Left_Player2").text = ke2.left;
@@ -303,15 +286,15 @@ public class UIGameSettings : UIBase
     /// <param name="data"></param>
     private void OnCancelClick(BaseEventData data)
     {
-
-       
+        //点击声音
         EventCenter.Instance.SendEvent(SGEventType.SoundPlay, new EventData(
                 new SoundParam(UIManager.Instance.Source, "Click02"), null));
-
-            Hide(()=>{ EventCenter.Instance.SendEvent(SGEventType.UIGameStartPanel, null); });
-
-          //  EventCenter.Instance.SendEvent(SGEventType.UIGameStartPanel, null);
-      
+        //移除InputFieldListener监听
+        EventCenter.Instance.SendEvent(SGEventType.InputFieldListenerRemove, null);
+        //隐藏
+        Hide(null);
+        //显示主菜单
+        EventCenter.Instance.SendEvent(SGEventType.UIGameStartPanel, new EventData(false,null));
     }
 
     /// <summary>
@@ -348,9 +331,11 @@ public class UIGameSettings : UIBase
             //声音
             EventCenter.Instance.SendEvent(SGEventType.SoundPlay, new EventData(
                 new SoundParam(UIManager.Instance.Source, "Click01"), null));
+            //移除InputFieldListener监听
+            EventCenter.Instance.SendEvent(SGEventType.InputFieldListenerRemove, null);
             //回到主菜单
             Hide(null);
-            EventCenter.Instance.SendEvent(SGEventType.UIGameStartPanel, null);
+            EventCenter.Instance.SendEvent(SGEventType.UIGameStartPanel, new EventData(false,null));
         }
     }
 

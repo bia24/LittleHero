@@ -15,22 +15,71 @@ public class InputController : Singleton<InputController>
     {
         //读取默认键盘操作配置文件
         DataManager.Instance.LoadData("KeyboardSettings", InputManager.Instance.InitKeyboardSettingsCallBack, true);
+        DataManager.Instance.LoadData("Combo", InputManager.Instance.InitComboInfosCallBack, false);
 
-        EventCenter.Instance.RegistListener(SGEventType.KeyboardConfigGet, KeyboardConfigGetListener);
+        //绑定事件
+        EventCenter.Instance.RegistListener(SGEventType.InputFieldListenerAdd, InputFieldListenerAdd);
+        EventCenter.Instance.RegistListener(SGEventType.InputFieldListenerRemove, InputFieldListenerRemove);
+        EventCenter.Instance.RegistListener(SGEventType.InputBattleListenerAdd, InputBattleListenerAdd);
+        EventCenter.Instance.RegistListener(SGEventType.InputBattleListenerRemove, InputBattleListenerRemove);
         EventCenter.Instance.RegistListener(SGEventType.InputFieldClick, InputFieldClickListener);
         EventCenter.Instance.RegistListener(SGEventType.SetLastFieldRefNull, SetNullLastRefListener);
         EventCenter.Instance.RegistListener(SGEventType.InputConfigSave, InputConfigSaveListener);
+        
     }
 
     /// <summary>
-    /// 键盘配置获取 监听
+    /// 挂载 InputFieldListener脚本，用来监听输入框修改
     /// </summary>
     /// <param name="data"></param>
-    private void KeyboardConfigGetListener(EventData data)
+    private void InputFieldListenerAdd(EventData data)
     {
-        EventCallBack cb = data.Param as EventCallBack;
-        List<KeyboardEntity> lke= InputManager.Instance.GetKeyboardSettings();
-        cb?.Invoke(new EventData(lke,null));
+        InputManager.Instance.AddInputFieldListener();
+    }
+    /// <summary>
+    /// 删除InputFieldListener脚本
+    /// </summary>
+    /// <param name="data"></param>
+    private void InputFieldListenerRemove(EventData data)
+    {
+        InputManager.Instance.RemoveInputFieldListener();
+    }
+    /// <summary>
+    /// 挂载战斗输入监听脚本
+    /// </summary>
+    /// <param name="data"></param>
+    private void InputBattleListenerAdd(EventData data)
+    {
+        int playerId = (int)data.Param;//获得需要添加的玩家id
+        InputManager.Instance.AddBattleInputListener(playerId);
+    }
+    /// <summary>
+    /// 移除监听 战斗输入
+    /// </summary>
+    /// <param name="data"></param>
+    private void InputBattleListenerRemove(EventData data)
+    {
+        int playerId = (int)data.Param;
+        InputManager.Instance.RemoveBattleInputListener(playerId);
+    }
+    /// <summary>
+    /// 键盘配置获取 , 仅做初始化显示使用
+    /// </summary>
+    /// <param name="data"></param>
+    public KeyboardEntity GetPlayerKeyboardSetting(int playerId)
+    {
+        return InputManager.Instance.GetPlayerKeyboardSetting(playerId);        
+    }
+
+    /// <summary>
+    ///  返回角色的连招表索引，依据连招id索引
+    /// </summary>
+    /// <param name="characterId"></param>
+    /// <returns></returns>
+    public  Dictionary<int, Combo> GetComboDic(int playerId)
+    {
+        int characterId = GameController.Instance.GetCharacterId(playerId);
+        return InputManager.Instance.GetComboDic(characterId);
     }
 
     /// <summary>
@@ -113,22 +162,49 @@ public class InputController : Singleton<InputController>
                 {
                     foreach (KeyCode kc in Enum.GetValues(typeof(KeyCode)))
                     {
-                        if (!bucket1.Exists((v) => { return v.Equals(kc.ToString()); }) &&
+                        if (kc!=KeyCode.None
+                            &&!bucket1.Exists((v) => { return v.Equals(kc.ToString()); }) &&
                             !bucket0.Exists((v) => { return v.Equals(kc.ToString()); }))
                         {
                             InputManager.Instance.SetGameKey(1, gk, kc.ToString());
                             bucket1.Add(kc.ToString());
+                            break;
                         }
                     }
                 }
             }
         }
-        //将最新数据存储到persistent文件夹中
-        List<KeyboardEntity> kbe = InputManager.Instance.GetKeyboardSettings();
+        //将最新数据存储到persistent文件夹中，保持内存中和磁盘中一致
+
+        List<KeyboardEntity> kbe = new List<KeyboardEntity>();
+        for(int playerId = 0; playerId < 2; playerId++)
+        {
+            kbe.Add(GetPlayerKeyboardSetting(playerId));
+        }
         KeyboardSettings kbs = new KeyboardSettings();
         kbs.keyboardEntities = kbe;
         string context = JsonUtility.ToJson(kbs,true);
         DataManager.Instance.SaveData("KeyboardSettings", context);
     }
 
+    /// <summary>
+    /// 返回玩家id 指定键位上的键值
+    /// </summary>
+    /// <param name="playerId"></param>
+    /// <param name="gameKey"></param>
+    /// <returns></returns>
+    public KeyCode GetGameKey(int playerId,GameKey gameKey)
+    {
+        string value = InputManager.Instance.GetGamekey(playerId, gameKey);
+        return (KeyCode)Enum.Parse(typeof(KeyCode), value);
+    }
+
+    /// <summary>
+    /// 获得连击的间隔时间
+    /// </summary>
+    /// <returns></returns>
+    public float GetCombointermissionTime()
+    {
+        return InputManager.Instance.GetCombointermissionTime();
+    }
 }

@@ -14,11 +14,16 @@ namespace SGModule
         /// 事件发送方
         /// </summary>
         public GameObject Sender { get; set; }
+        /// <summary>
+        /// 参数2封装
+        /// </summary>
+        public object Param2 { get; set; }
 
-        public EventData(object param,GameObject sender)
+        public EventData(object param,GameObject sender,object param2=null)
         {
             Param = param;
             Sender = sender;
+            Param2 = param2;
         }
          
     }

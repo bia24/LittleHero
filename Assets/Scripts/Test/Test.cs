@@ -2,33 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SGModule;
-
+using DG.Tweening;
 public class Test : MonoBehaviour
 {
-   public GameObject go = null;
+    public AnimationClip anim;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        go.SetActive(false);
+        
+
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            show();
+            Debug.Log("Down"+Time.frameCount);
+        }
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            Debug.Log("up" + Time.frameCount);
         }
     }
-
-    private void show()
-    {
-        go.SetActive(true);
-        Debug.Log("show");
-        Debug.Log("show");
-        Debug.Log("show");
-        Debug.Log("show");
-        Debug.Log("show");
-        Debug.Log("show");
-    }
- 
 }

@@ -1,4 +1,0 @@
-{
-	"playerNumber":2,
-	"difficulty":"Easy"
-}

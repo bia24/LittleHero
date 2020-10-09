@@ -15,57 +15,53 @@ namespace SGModule
         /// 对象名称-池子索引
         /// </summary>
         private Dictionary<string, Pool> pools = new Dictionary<string, Pool>();
-        /// <summary>
-        /// go预制体在resources文件夹中的路径
-        /// </summary>
-        private static string gameObjectPrefabsResourcePath = "GoPrefabs";
-
+       
         /// <summary>
         /// 从对象池中获取一个对象
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="resourcesName"></param>
         /// <param name="parent"></param>
         /// <returns></returns>
-        public GameObject getPrefab(string name,Transform parent=null)
+        public GameObject getPrefab(string resourcesName,string rename,Transform parent=null,bool stayWorldPos=false)
         {
             GameObject go = null;
-            if (hasPool(name)) //池子已经拥有
+            if (hasPool(resourcesName)) //池子已经拥有
             {
-                if (pools[name].Empty())
+                if (pools[resourcesName].Empty())
                 {
                     //池子存在，但是没有对象可以使用了，实例化一个对象
-                    go = AssetManager.Instance.LoadGameObject(gameObjectPrefabsResourcePath+"/"+name);
+                    go = AssetManager.Instance.LoadGameObject(resourcesName);
                     if (go == null)
                     {
-                        Debug.LogError("prefab not exists in resources : "+name);
+                        Debug.LogError("prefab not exists in resources : "+resourcesName);
                         return null;
                     }
                 }
                 else 
-                    go = pools[name].getObject();
+                    go = pools[resourcesName].getObject();
             }
             else //池子不存在
             {
-                go= AssetManager.Instance.LoadGameObject(gameObjectPrefabsResourcePath + "/" + name);
+                go= AssetManager.Instance.LoadGameObject(resourcesName);
                 if (go == null)
                 {
-                    Debug.LogError("prefab not exists in resources : " + name);
+                    Debug.LogError("prefab not exists in resources : " + resourcesName);
                     return null;
                 }
                 //初始化池子
-                pools.Add(name, new Pool(go.transform));
+                pools.Add(resourcesName, new Pool(go.transform));
             }
             //对获得的对象进行transform初始化，赋值为prefab中的数据
             if (parent != null)
             {
-                go.transform.SetParent(parent);
+                go.transform.SetParent(parent, stayWorldPos);
             }
-            go.transform.localPosition = pools[name].InitPos;
-            go.transform.localRotation = pools[name].InitRot;
-            go.transform.localScale = pools[name].InitScale;
+            go.transform.localPosition = pools[resourcesName].InitPos;
+            go.transform.localRotation = pools[resourcesName].InitRot;
+            go.transform.localScale = pools[resourcesName].InitScale;
 
             go.SetActive(true);
-            go.name = name;
+            go.name = rename;
             return go;
         }
 

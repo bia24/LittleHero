@@ -59,7 +59,7 @@ namespace SGModule {
             {
                 res = Resources.Load<T>(path);
                 if (res == null) {
-                    Debug.LogError("Null Object load");
+                    Debug.LogError("Null Object load .Path : "+path);
                     return null;
                 }
                 caches.Add(path, res);

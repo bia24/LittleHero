@@ -1,0 +1,24 @@
+{
+  "eachDifficults": [
+    {
+      "difficulty": "Easy",
+      "eachLevels": [
+        {
+          "level": 1,
+          "eachTimes": [
+            {
+              "number": 1,
+              "enemyDetails": [
+                {
+                  "characterId": 3,
+                  "pos": "LeftUp"
+                }
+                
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
