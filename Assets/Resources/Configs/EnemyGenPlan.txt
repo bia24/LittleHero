@@ -6,16 +6,305 @@
         {
           "level": 1,
           "eachTimes": [
-            {
-              "number": 1,
-              "enemyDetails": [
-                {
-                  "characterId": 3,
-                  "pos": "LeftUp"
-                }
+			{
+				"number":1,
+				"enemyDetails": [
                 
+				{
+					"characterId": 3,
+					"pos": "LeftUp"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftBottom"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightMid"
+				}
               ]
-            }
+			},
+			{
+				"number":2,
+				"enemyDetails": [
+                {
+					"characterId": 4,
+					"pos": "RightBottom"
+                },
+				{
+					"characterId": 5,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftUp"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftBottom"
+                }
+				
+              ]
+			}
+          ]
+        },
+		{
+          "level": 2,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                {
+					"characterId": 6,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 4,
+					"pos": "RightUp"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightBottom"
+				},
+				{
+					"characterId": 5,
+					"pos": "LeftBottom"
+                }
+              ]
+			}
+          ]
+        },
+		{
+          "level": 3,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                {
+					"characterId": 7,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 4,
+					"pos": "RightUp"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightBottom"
+				},
+				{
+					"characterId": 5,
+					"pos": "LeftBottom"
+                }
+				
+              ]
+			}
+          ]
+        }
+      ]
+    },
+	{
+      "difficulty": "Normal",
+      "eachLevels": [
+        {
+          "level": 1,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                
+				{
+					"characterId": 3,
+					"pos": "LeftUp"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftBottom"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightMid"
+				}
+              ]
+			},
+			{
+				"number":2,
+				"enemyDetails": [
+                {
+					"characterId": 4,
+					"pos": "RightBottom"
+                },
+				{
+					"characterId": 5,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftUp"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftBottom"
+                }
+				
+              ]
+			}
+          ]
+        },
+		{
+          "level": 2,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                {
+					"characterId": 6,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 4,
+					"pos": "RightUp"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightBottom"
+				},
+				{
+					"characterId": 5,
+					"pos": "LeftBottom"
+                }
+              ]
+			}
+          ]
+        },
+		{
+          "level": 3,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                {
+					"characterId": 7,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 4,
+					"pos": "RightUp"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightBottom"
+				},
+				{
+					"characterId": 5,
+					"pos": "LeftBottom"
+                }
+				
+              ]
+			}
+          ]
+        }
+      ]
+    },
+	{
+      "difficulty": "Hard",
+      "eachLevels": [
+        {
+          "level": 1,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                
+				{
+					"characterId": 3,
+					"pos": "LeftUp"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftBottom"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightMid"
+				}
+              ]
+			},
+			{
+				"number":2,
+				"enemyDetails": [
+                {
+					"characterId": 4,
+					"pos": "RightBottom"
+                },
+				{
+					"characterId": 5,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftUp"
+                },
+				{
+					"characterId": 3,
+					"pos": "LeftBottom"
+                }
+				
+              ]
+			}
+          ]
+        },
+		{
+          "level": 2,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                {
+					"characterId": 6,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 4,
+					"pos": "RightUp"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightBottom"
+				},
+				{
+					"characterId": 5,
+					"pos": "LeftBottom"
+                }
+              ]
+			}
+          ]
+        },
+		{
+          "level": 3,
+          "eachTimes": [
+			{
+				"number":1,
+				"enemyDetails": [
+                {
+					"characterId": 7,
+					"pos": "RightMid"
+                },
+				{
+					"characterId": 4,
+					"pos": "RightUp"
+				},
+				{
+					"characterId": 4,
+					"pos": "RightBottom"
+				},
+				{
+					"characterId": 5,
+					"pos": "LeftBottom"
+                }
+				
+              ]
+			}
           ]
         }
       ]

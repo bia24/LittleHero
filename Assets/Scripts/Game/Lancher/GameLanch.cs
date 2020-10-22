@@ -43,7 +43,7 @@ public class GameLanch : MonoBehaviour
     /// </summary>
     private void InitGame()
     {
-        Debug.Log("-----游戏初始化-----开始");
+
 
         
 
@@ -84,13 +84,13 @@ public class GameLanch : MonoBehaviour
     {
         //取消绑定初始化加载完成的回调，避免后续继续使用UILoading界面发生响应。
         EventCenter.Instance.RemoveListener(SGEventType.LoadingFinish, LanchGame);
-        Debug.Log("-----游戏初始化-----完成");
+     
 
         //ui  trigger
         EventCenter.Instance.SendEvent(SGEventType.UIGameStartPanel,new EventData(true,null));
         //sound bgm trigger
         EventCenter.Instance.SendEvent(SGEventType.SoundBGM, new EventData("MainBGM",null));
-        Debug.Log("-----游戏启动----->>>>>>>");
+      
     }
 
    

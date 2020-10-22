@@ -4,17 +4,17 @@
 		{
 			"id":1,
 			"bgName":"BG1",
-			"soundType":"NormalBattle"
+			"soundType":"Level1"
 		},
 		{
 			"id":2,
 			"bgName":"BG2",
-			"soundType":"NormalBattle"
+			"soundType":"Level2"
 		},
 		{
 			"id":3,
 			"bgName":"BG3",
-			"soundType":"NormalBattle"
+			"soundType":"Level3"
 		}
 	]
 }

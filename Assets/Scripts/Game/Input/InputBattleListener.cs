@@ -18,6 +18,10 @@ public class InputBattleListener : MonoBehaviour
     /// </summary>
     private bool listenerTrigger = false;
     /// <summary>
+    /// 退出按钮开关
+    /// </summary>
+    private bool escButtonTrigger = false;
+    /// <summary>
     /// 玩家输入按键的缓存
     /// </summary>
     private List<GameKey> playerInputCache = new List<GameKey>();
@@ -43,8 +47,8 @@ public class InputBattleListener : MonoBehaviour
     {
         //参数设置
         this.playerId = playerId;
-        listenerTrigger = true;
         comboTime = InputController.Instance.GetCombointermissionTime();
+
         //初始化
         inputDeltaTime= 0.0f;
         ClearInputCache();
@@ -52,17 +56,67 @@ public class InputBattleListener : MonoBehaviour
         playerInput = new PlayerInput();
 
         //绑定监听
-        EventCenter.Instance.RegistListener(SGEventType.DialogueRankReset, DialogueRankResetListener);
+        RegisterEvent();
+        //激活开关，依据当前游戏是否运行态 确定是否激活。
+        bool active = BattleController.Instance.GetGameState() == GameState.Running ? true : false;
+        SetTrigger(active);
+        escButtonTrigger = true;
+    }
+
+    private void RegisterEvent()
+    {
+        //绑定监听
+        EventCenter.Instance.RegistListener(SGEventType.BattlePause, SetTriggerOffListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattlePauseExit, SetTriggerOnListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattleDialogueAppear, SetTriggerOffListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattleDialogueAppear, SetEcsTriggerOffLisener);
+        EventCenter.Instance.RegistListener(SGEventType.BattleDialogueExit, SetEcsTriggerOnLisener);
+        EventCenter.Instance.RegistListener(SGEventType.BattleDialogueExit, SetTriggerOnListener);
+        EventCenter.Instance.RegistListener(SGEventType.UIDarkPanel, SetEcsTriggerOffLisener);
+    }
+
+    private void RemoveEvent()
+    {
+        //取消监听
+        EventCenter.Instance.RemoveListener(SGEventType.BattlePause, SetTriggerOffListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattlePauseExit, SetTriggerOnListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleDialogueAppear, SetTriggerOffListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleDialogueAppear, SetEcsTriggerOffLisener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleDialogueExit, SetEcsTriggerOnLisener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleDialogueExit, SetTriggerOnListener);
+        EventCenter.Instance.RemoveListener(SGEventType.UIDarkPanel, SetEcsTriggerOffLisener);
     }
 
     /// <summary>
-    /// 对话结束事件监听函数
+    /// 退出按钮的监控
     /// </summary>
     /// <param name="data"></param>
-    private void DialogueRankResetListener(EventData data)
+    private void SetEcsTriggerOffLisener(EventData data)
+    {
+        escButtonTrigger = false;
+    }
+    /// <summary>
+    /// 退出按钮的监控
+    /// </summary>
+    /// <param name="data"></param>
+    private void SetEcsTriggerOnLisener(EventData data)
+    {
+        escButtonTrigger = true;
+    }
+
+    /// <summary>
+    /// 游戏暂停时的监听
+    /// </summary>
+    private void SetTriggerOffListener(EventData data)
+    {
+        SetTrigger(false);
+    }
+
+    private void SetTriggerOnListener(EventData data)
     {
         SetTrigger(true);
     }
+
     /// <summary>
     /// 设置监听开关
     /// </summary>
@@ -119,6 +173,20 @@ public class InputBattleListener : MonoBehaviour
                 EventCenter.Instance.SendEvent(SGEventType.CommandNoneDir, new EventData(playerId, null));
             }
         }
+
+        //-------------------------------------
+
+
+        //esc键被按下，且是主机的监听器，唤出游戏暂停面板
+        if (Input.GetKeyDown(KeyCode.Escape)&&playerId==0&&escButtonTrigger==true)
+        {
+            //唤出UI
+            EventCenter.Instance.SendEvent(SGEventType.EscKeyDown, null);
+            //声音
+            EventCenter.Instance.SendEvent(SGEventType.SoundPlay, new EventData(
+               new SoundParam(UIManager.Instance.Source, "Click03"), null));
+        }
+        
 
 
     }
@@ -387,9 +455,12 @@ public class InputBattleListener : MonoBehaviour
 
     public void RemoveListener()
     {
-        //取消监听
-        EventCenter.Instance.RemoveListener(SGEventType.DialogueRankReset, DialogueRankResetListener);
         //摧毁本脚本
         Destroy(this);
+    }
+
+    private void OnDestroy()
+    {
+        RemoveEvent();
     }
 }

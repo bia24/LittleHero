@@ -28,38 +28,44 @@ namespace SGModule
     /// </summary>
     public class AnimManager : Singleton<AnimManager>
     {
-        /// <summary>
-        /// 是否绑定过回调函数的缓存查找索引
-        /// </summary>
-        private List<Type> hasBinded = new List<Type>();
-
 
         /// <summary>
         /// 依据游戏角色物体和回调控制器(mono)实现动态动画绑定
+        /// note：由于发布后，动画片段在内存重新加载时就会重置，所以不能用角色类型来判断是否绑定过
+        /// note：直接在动画片段上查找是否有绑定函数，没有再绑定
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="target"></param>
         public void BindAnimCallBack(IAnim target) 
         {
-            if (hasBinded.Contains(target.GetType()))
-            {
-                //说明该类型绑定过了，因为同一类型绑定的回调函数都是一致的，
-                //且所有实例对象是共用animationclip的，所以不需要再绑定了，会造成回调函数重复
-                //只要上述给它加上T类型的脚本即可。
-                Debug.Log(target.GetType() + " bind animation callback finished. has been binded same callbacks");
-                return;
-            }
-
             //绑定动画回调函数
             //获得动画状态机中的所有动画片段引用
             AnimationClip[] clips = target.GetAnimator().runtimeAnimatorController.animationClips;
             List<AnimCallBackEntity> entities =target.GetCallBacks();
-            foreach(var e in entities)
+          
+            foreach (var e in entities)
             {
                 for(int i = 0; i < clips.Length; i++)
                 {
-                    if (clips[i].name.Equals(e.AnimName))
+                    AnimationClip clip = clips[i];
+                    if (clip.name.Equals(e.AnimName))//当动画片段的名称相同，这是需要绑定的目标
                     {
+                        //这里要加一步判断，判断是否该动画片段中已经绑定了同名方法，有则不再重复绑定
+                        AnimationEvent[] events = clip.events;
+                        bool isExits = false;
+                        for(int j = 0; j < events.Length; j++)
+                        {
+                            //查找该片段的所有事件中，是否有同名事件了。
+                            if (events[j].functionName.Equals(e.FunName))
+                            {
+                                isExits = true;
+                                break;
+                            }
+                        }
+                        if (isExits)//若存在相同的同名事件方法
+                        {
+                            break;
+                        }
                         AnimationEvent ae = new AnimationEvent();
                         ae.time = clips[i].length * e.NormalizeTime; //用单位比例时间获得实际时间
                         ae.functionName = e.FunName;
@@ -86,9 +92,7 @@ namespace SGModule
                     }
                 }
             }
-            //将角色动画控制的T类型加入缓存，同一种类型的绑定一次即可
-            hasBinded.Add(target.GetType());
-            Debug.Log(target.GetType() + " bind animation callback finished.");
+         
         }
 
 
@@ -155,5 +159,19 @@ namespace SGModule
             }
             return null;
         }
+
+        public void ResetAllTrigger(Animator target)
+        {
+            AnimatorControllerParameter[] paramArray = target.parameters;
+            foreach (var param in paramArray)
+            {
+                if (param.type == AnimatorControllerParameterType.Trigger)
+                {
+                    target.ResetTrigger(param.name);
+                }
+            }
+        }
     }
+
+    
 }

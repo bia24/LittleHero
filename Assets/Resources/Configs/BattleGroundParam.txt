@@ -1,0 +1,12 @@
+{
+	"moveXMin":0,
+	"moveXMax":13.53,
+	"moveYMin":0,
+	"moveYMax":3.45,
+	"cameraXMin":-2.81,
+	"cameraXMax":2.85,
+	"triggerOne":2.39,
+	"triggerTwo":5.16,
+	"triggerThree":7.92,
+	"triggerFour":11.29
+}

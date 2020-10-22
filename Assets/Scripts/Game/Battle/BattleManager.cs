@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SGModule;
 using System;
+using DG.Tweening;
 
 /// <summary>
 /// 相机摆放位置
@@ -26,6 +27,50 @@ public enum Produce
     RightMid
 }
 
+/// <summary>
+/// 攻击者
+/// </summary>
+public interface IAttacker
+{
+    Vector3 GetAttackerLocalPostion();
+    Vector3 GetAttackerLocalScale();
+    bool IsParticleAttack();
+    MoveParticleBase GetParticle();
+    GameObject GetGameObject();
+}
+
+/// <summary>
+/// 技能强化接口
+/// </summary>
+public interface IStrengthenSkill
+{
+    Skill StrengthenSkill(Skill skill);
+}
+/// <summary>
+/// 特效粒子速度获取接口
+/// </summary>
+public interface IParticleMoveSpeed
+{
+    float GetParticleMoveSpeed();
+}
+/// <summary>
+/// 游戏运行状态
+/// </summary>
+public enum GameState
+{
+    None,
+    /// <summary>
+    /// 运行中
+    /// </summary>
+    Running,
+    /// <summary>
+    /// 运行中
+    /// </summary>
+    Pause
+}
+
+
+
 public class BattleManager : Singleton<BattleManager>
 {
     #region 配置文件中读入，运行时不做改变
@@ -38,9 +83,17 @@ public class BattleManager : Singleton<BattleManager>
     /// </summary>
     private int levelMax;
     /// <summary>
-    /// 难度参数
+    ///  等级上升经验值增加比例
     /// </summary>
-    private Dictionary<DifficultyType, DifficultyParam> dps = new Dictionary<DifficultyType, DifficultyParam>();
+    private float levelUpExpRate;
+    /// <summary>
+    /// 每个敌人击打获得的经验值
+    /// </summary>
+    private int perEnemyExp;
+    /// <summary>
+    /// 每个敌人击打时获得的蓝量
+    /// </summary>
+    private int perEnemyMp;
     /// <summary>
     /// 角色的战斗信息
     /// </summary>
@@ -57,6 +110,46 @@ public class BattleManager : Singleton<BattleManager>
     /// 玩家生成计划
     /// </summary>
     private Dictionary<DifficultyType, Dictionary<int, Dictionary<int, List<EnemyDetail>>>> enemyGenPlans = new Dictionary<DifficultyType, Dictionary<int, Dictionary<int, List<EnemyDetail>>>>();
+    /// <summary>
+    /// 玩家移动的左边界
+    /// </summary>
+    public float MoveXMin { get; set; }
+    /// <summary>
+    /// 玩家移动的右边界
+    /// </summary>
+    public float MoveXMax { get; set; }
+    /// <summary>
+    /// 玩家移动的下边界
+    /// </summary>
+    public float MoveYMin { get; set; }
+    /// <summary>
+    /// 玩家移动的上边界
+    /// </summary>
+    public float MoveYMax { get; set; }
+    /// <summary>
+    /// 相机左移的坐标
+    /// </summary>
+    public float CameraXMin { get; set; }
+    /// <summary>
+    /// 相机右移的坐标
+    /// </summary>
+    public float CameraXMax { get; set; }
+    /// <summary>
+    /// 触发相机移动的坐标1
+    /// </summary>
+    public float TriggerOne { get; set; }
+    /// <summary>
+    /// 触发相机移动的坐标2
+    /// </summary>
+    public float TriggerTwo { get; set; }
+    /// <summary>
+    /// 触发相机移动的坐标3
+    /// </summary>
+    public float TriggerThree { get; set; }
+    /// <summary>
+    /// 触发相机移动的坐标4
+    /// </summary>
+    public float TriggerFour { get; set; }
     #endregion
     #region 运行时进行初始化的值
     /// <summary>
@@ -72,6 +165,11 @@ public class BattleManager : Singleton<BattleManager>
     /// </summary>
     private Camera camera;
     /// <summary>
+    /// 获得战场相机
+    /// </summary>
+    /// <returns></returns>
+    public Camera GetBattleCamera() { return camera; }
+    /// <summary>
     /// 所有游戏物体在游戏空间中的原点
     /// </summary>
     private Transform basePoint;
@@ -79,29 +177,94 @@ public class BattleManager : Singleton<BattleManager>
     /// 游戏物体的产生坐标集合，原点为basePoint
     /// </summary>
     private Dictionary<Produce, Transform> producePoint = new Dictionary<Produce, Transform>();
+    /// <summary>
+    /// 挂方向提示判断脚本的物体
+    /// </summary>
+    private GameObject DirTip { get; set; } 
+    /// <summary>
+    /// 战场上的音乐
+    /// </summary>
+    public AudioSource audioSource { get; set; }
+
     #endregion
     #region 只读常量，不改变
     /// <summary>
     /// 产生的游戏物体预制体根目录
     /// </summary>
     private readonly string GAMEOBJECT_RESOURCES_PATH = "GameObject";
+    public string GetGameObjectResourcesPath()
+    {
+        return GAMEOBJECT_RESOURCES_PATH;
+    }
     /// <summary>
-    /// 相机中点位置x轴
+    /// 能量特效存储地址
     /// </summary>
-    private readonly float CAMERA_POS_MID = 0.0f;
+    private readonly string POWER_PARTICLE_RESOURCES_FULLPATH = "Particle/QiChangParticle";
+    public string GetPowerParticleResourcesFullPath()
+    {
+        return POWER_PARTICLE_RESOURCES_FULLPATH;
+    }
     /// <summary>
-    /// 相机左边坐标位置x轴
+    /// 死亡特效地址
     /// </summary>
-    private readonly float CAMERA_POS_LEFT = -2.81f;
+    private readonly string DIE_PARTICLE_RESOURCES_FULLPATH = "Particle/DieParticle";
+    public string GetDieParticleResourcesFullPath()
+    {
+        return DIE_PARTICLE_RESOURCES_FULLPATH;
+    }
     /// <summary>
-    /// 相机右边坐标位置x轴
+    /// 特效根目录
     /// </summary>
-    private readonly float CAMERA_POS_RIGHT = 2.85f;
+    private readonly string PARTICLE_RESOURCES_PATH = "Particle";
+    public string GetParticleResourcesRootPath()
+    {
+        return PARTICLE_RESOURCES_PATH;
+    }
     /// <summary>
     /// 最大能量数目
     /// </summary>
     private readonly int POWER_MAX = 3;
+    /// <summary>
+    /// BOSS1 的角色id
+    /// </summary>
+    public readonly int BOSS1_ID = 5;
+    /// <summary>
+    /// BOSS2的角色id
+    /// </summary>
+    public readonly int BOSS2_ID = 6;
+    /// <summary>
+    /// BOSS3 的角色id
+    /// </summary>
+    public readonly int BOSS3_ID = 7;
+
     #endregion
+
+    #region 变量
+    /// <summary>
+    /// 当前相机的位置
+    /// </summary>
+    private CameraPos currentCameraPos;
+
+    /// <summary>
+    /// 场景中的敌人集合
+    /// </summary>
+    public List<Enemy> enemyInBattle=new List<Enemy>();
+    /// <summary>
+    /// 场景中的玩家集合
+    /// </summary>
+    public List<Player> playerInBattle = new List<Player>();
+    /// <summary>
+    /// 场景中的所有可移动的特效
+    /// </summary>
+    public List<IAttacker> moveParticleInBattle = new List<IAttacker>();
+
+    /// <summary>
+    /// 游戏状态
+    /// </summary>
+    public GameState GameState { get; set; }
+   
+    #endregion
+
     /// <summary>
     /// 初始化战斗信息，每次场景进入要重新初始化。因为场景切换。manager不摧毁，但是场景物体会摧毁，因此每次进入场景都要重新初始化
     /// </summary>
@@ -115,8 +278,35 @@ public class BattleManager : Singleton<BattleManager>
         PointTransformGet();
         //重置当前关卡
         currentLevel = 1;
+        //敌人集合清空
+        enemyInBattle.Clear();
+        //玩家集合清空
+        playerInBattle.Clear();
+        //清空所有可移动的特效
+        moveParticleInBattle.Clear();
+        //创建方向提示脚本的挂载物体
+        DirTip = new GameObject("DirTip");
+        DirTip.AddComponent<BattleDirTip>();
+        //设置初始状态
+        GameState = GameState.None;
+        //添加音源
+        audioSource= new GameObject("BattleSource").AddComponent<AudioSource>();
     }
-    
+    /// <summary>
+    /// 战场完成退出或中途退出时
+    /// </summary>
+    public void BattleExit()
+    {
+        //清理产生的东西
+        //1.提示标志删除
+        UnityEngine.Object.Destroy(DirTip);
+        DirTip = null;
+        //2.设置状态
+        GameState = GameState.None;
+        //3.音源删除
+        UnityEngine.Object.Destroy(GameObject.Find("BattleSource"));
+    }
+
     /// <summary>
     /// 角色信息加载回调
     /// </summary>
@@ -159,10 +349,10 @@ public class BattleManager : Singleton<BattleManager>
 
         levelUpExp = bp.levelUpExp;
         levelMax = bp.levelMax;
-        foreach (var t in bp.difficultyParams)
-        {
-            dps.Add((DifficultyType)Enum.Parse(typeof(DifficultyType), t.type), t);
-        }
+        levelUpExpRate = bp.expUpRate;
+        perEnemyExp = bp.perEnemyExp;
+        perEnemyMp = bp.perEnemyMp;
+      
     }
 
     /// <summary>
@@ -208,6 +398,25 @@ public class BattleManager : Singleton<BattleManager>
 
 
     /// <summary>
+    /// 战场地面参数回调
+    /// </summary>
+    /// <param name="context"></param>
+    public void BattleGroundParamLoadCallBack(string context)
+    {
+        Boundary boundary = JsonUtility.FromJson<Boundary>(context);
+        MoveXMin = boundary.moveXMin;
+        MoveXMax = boundary.moveXMax;
+        MoveYMin = boundary.moveYMin;
+        MoveYMax = boundary.moveYMax;
+        CameraXMin = boundary.cameraXMin;
+        CameraXMax = boundary.cameraXMax;
+        TriggerOne = boundary.triggerOne;
+        TriggerTwo = boundary.triggerTwo;
+        TriggerThree = boundary.triggerThree;
+        TriggerFour = boundary.triggerFour;
+    }
+
+    /// <summary>
     /// 设置相机位置
     /// </summary>
     /// <param name="pos"></param>
@@ -216,15 +425,26 @@ public class BattleManager : Singleton<BattleManager>
         switch (pos)
         {
             case CameraPos.Mid:
-                camera.transform.position = new Vector3(CAMERA_POS_MID, 0, 0);
+                currentCameraPos = CameraPos.Mid;
+                camera.transform.DOMove(new Vector3(0,0,-5),0.8f);
                 break;
             case CameraPos.Left:
-                camera.transform.position = new Vector3(CAMERA_POS_LEFT, 0, 0);
+                currentCameraPos = CameraPos.Left;
+                camera.transform.DOMove(new Vector3(CameraXMin, 0, -5), 0.8f);
                 break;
             case CameraPos.Right:
-                camera.transform.position = new Vector3(CAMERA_POS_RIGHT, 0, 0);
+                currentCameraPos = CameraPos.Right;
+                camera.transform.DOMove(new Vector3(CameraXMax, 0, -5), 0.8f);
                 break;
         }
+    }
+    /// <summary>
+    /// 获得当前相机的位置
+    /// </summary>
+    /// <returns></returns>
+    public CameraPos GetCameraPos()
+    {
+        return currentCameraPos;
     }
 
 
@@ -274,6 +494,7 @@ public class BattleManager : Singleton<BattleManager>
         {
             Debug.LogError("invaild level");
         }
+        //设置当前关卡
         currentLevel = level;
     }
 
@@ -308,6 +529,7 @@ public class BattleManager : Singleton<BattleManager>
     /// <returns></returns>
     private Player AddPlayerScript(GameObject target,int characterId)
     {
+        //target 一定是依据角色id取出的模型。因此即使绑定过脚本也一定是对应的角色脚本。因此没必要重新绑定
         Player res = target.GetComponent<Player>();
         if (res == null)
         {
@@ -363,6 +585,21 @@ public class BattleManager : Singleton<BattleManager>
         Player p = AddPlayerScript(player, characterId);
         return p;
     }
+    /// <summary>
+    /// 初始化玩家的位置
+    /// </summary>
+    /// <param name="p"></param>
+    public void ResetPlayerTransform(Player p)
+    {
+        //设置初始位置
+        p.transform.localPosition = producePoint[Produce.LeftMid].localPosition;
+        //初始化面向
+        float x = p.transform.localScale.x;
+        if (x > 0)
+            x *= -1;
+        p.transform.localScale = new Vector3(x, p.transform.localScale.y, p.transform.localScale.z);
+    }
+
 
    /// <summary>
    /// 生成敌人生成器
@@ -372,9 +609,22 @@ public class BattleManager : Singleton<BattleManager>
         GameObject go = GameObject.Find("EnemyGenerator");
         if (go == null)
             go = new GameObject("EnemyGenerator");
-        if (go.GetComponent<EnemyGenerator>() == null)
-            go.AddComponent<EnemyGenerator>();
+        EnemyGenerator eg = go.GetComponent<EnemyGenerator>();
+        if (eg == null)
+            eg = go.AddComponent<EnemyGenerator>();
+        eg.Init();
     }
+    /// <summary>
+    /// 摧毁敌人生成器
+    /// </summary>
+    public void DestroyEnemyGenerator()
+    {
+        GameObject go = GameObject.Find("EnemyGenerator");
+        if (go != null)
+            UnityEngine.Object.Destroy(go);
+    }
+
+   
 
     /// <summary>
     /// 按照难度返回当前关卡的产兵计划
@@ -425,4 +675,56 @@ public class BattleManager : Singleton<BattleManager>
         }
         return res;
     }
+
+    /// <summary>
+    /// 获得玩家最大等级
+    /// </summary>
+    /// <returns></returns>
+    public int GetPlayerLevelMax()
+    {
+        return this.levelMax;
+    }
+
+    /// <summary>
+    /// 获得经验上限基础值。readonly
+    /// </summary>
+    /// <returns></returns>
+    public int GetPlayerLevelUpExp()
+    {
+        return this.levelUpExp;
+    }
+    /// <summary>
+    /// 获得经验上限随等级提升率
+    /// </summary>
+    /// <returns></returns>
+    public float GetPlayerLevelUpExpRate()
+    {
+        return this.levelUpExpRate;
+    }
+    /// <summary>
+    /// 获得击打每个敌人的经验值
+    /// </summary>
+    /// <returns></returns>
+    public int GetPerEnemyExp()
+    {
+        return this.perEnemyExp;
+    }
+    /// <summary>
+    /// 获得击打每个敌人的蓝量
+    /// </summary>
+    /// <returns></returns>
+    public int GetPerEnemyMp()
+    {
+        return this.perEnemyMp;
+    }
+    /// <summary>
+    /// 获得能量值的最大值
+    /// </summary>
+    /// <returns></returns>
+    public int GetPowerMax()
+    {
+        return POWER_MAX;
+    }
+
+    
 }

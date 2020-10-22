@@ -20,6 +20,8 @@ public class SceneController : Singleton<SceneController>
     private void SceneLoadListener(EventData data)
     {
         string name = data.Param as string;
+        //先清除缓存
+        GameController.Instance.ClearCache();
         //通知ui唤出加载界面
         EventCenter.Instance.SendEvent(SGEventType.UILoadScenePanel, null);
         //通过场景管理器 开启场景加载 逻辑

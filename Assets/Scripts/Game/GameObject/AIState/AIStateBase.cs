@@ -12,7 +12,7 @@ public abstract  class AIStateBase
     /// 获得本状态所代表的状态
     /// </summary>
     /// <returns></returns>
-    public Enemy.AIState GetState() { return state; }
+    public Enemy.AIState GetName() { return state; }
     public abstract void OnEnter(Enemy enemy);
     public abstract void Update(Enemy enemy);
     public abstract void OnExit(Enemy enemy);

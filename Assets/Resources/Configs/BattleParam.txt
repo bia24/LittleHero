@@ -1,28 +1,8 @@
 {
-	"levelUpExp":100,
+	"levelUpExp":40,
 	"levelMax":25,
-	"difficultyParams":
-	[
-		{
-			"type":"Easy",
-			"pdefenseUpRate":1,
-			"mdefenseUpRate":1,
-			"damageUpRate":1,
-			"reduceRate":1
-		},
-		{
-			"type":"Normal",
-			"pdefenseUpRate":1.5,
-			"mdefenseUpRate":1.5,
-			"damageUpRate":1.5,
-			"reduceRate":0.8
-		},
-		{
-			"type":"Hard",
-			"pdefenseUpRate":2,
-			"mdefenseUpRate":2,
-			"damageUpRate":2,
-			"reduceRate":0.5
-		}
-	]
+	"expUpRate":1.1,
+	"perEnemyExp":2,
+	"perEnemyMp":10
+	
 }

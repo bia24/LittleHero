@@ -26,7 +26,7 @@ namespace SGModule
         IEnumerator Task(object param)
         {
             LoaderInParam p = param as LoaderInParam;
-            Debug.Log("Start asyncloading asset from " + p.Url);
+
             www = new WWW(p.Url);
             yield return www;
 
@@ -37,7 +37,6 @@ namespace SGModule
             }
 
 
-            Debug.Log("Asyncloading asset finished " );
             //回调函数执行
             p.Callback.Invoke(www.text);
             //向数据管理器中加入缓存

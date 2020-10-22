@@ -27,7 +27,7 @@ namespace SGModule
             }
 
             object instance = res[0];
-            res.Remove(0);
+            res.RemoveAt(0);
 
             return instance as T;
         }

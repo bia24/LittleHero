@@ -35,62 +35,59 @@ public class Walk : AIStateBase
         EventCenter.Instance.SendEvent(SGEventType.AnimSetBool, new EventData("Walking", enemy.gameObject, true));
         //更新行走方向
         List<Transform> players = enemy.SearchTarget();
-        target = GetMinDisPlayer(players, enemy);
-        dir = target.localPosition - enemy.transform.localPosition;
-        dir = new Vector3(dir.x, dir.y, 0f);
-        dir = Vector3.Normalize(dir);
+        target = enemy.GetMinDisPlayer(players);
+
+        if (target == null)//若无法找到玩家，说明玩家已经死亡
+        {
+            enemy.SetState(Enemy.AIState.Idle);
+        }
+        else
+        {
+            dir = target.localPosition - enemy.transform.localPosition;
+            dir = new Vector3(dir.x, dir.y, 0f);
+            dir = Vector3.Normalize(dir);
+        }
         //初始化移动时间
         moveTime = 0.0f;
+        Random.InitState(System.DateTime.Now.Millisecond);
         moveTimeMax = enemy.GetMoveTime() * Random.Range(enemy.GetMoveTimePRLower(), 1.0f);
-
     }
 
     public override void OnExit(Enemy enemy)
     {
         //关闭走路动画
         EventCenter.Instance.SendEvent(SGEventType.AnimSetBool, new EventData("Walking", enemy.gameObject, false));
+        //将自己revert回工厂
+        StateFactory.Instance.Revert(this);
     }
 
     public override void Update(Enemy enemy)
     {
-        if (!enemy.IsInState(State.Walk) || enemy.IsInTransforming())
+        if (target == null) //目标玩家在锁定后死亡
+        {
+            //切换到站立状态
+            enemy.SetState(Enemy.AIState.Idle);
+            //结束
+            return;
+        }
+
+        if (enemy.IsInTransforming())
             return;
         moveTime += Time.deltaTime;
-        if (moveTime < moveTimeMax&&
-            Vector3.Distance(enemy.transform.localPosition,target.transform.localPosition)>enemy.GetSearchDistance())
+        if (moveTime < moveTimeMax && enemy.WalkingCondition(target))
         {
             enemy.Move(dir);
+            enemy.Rotate(dir);
         }
         else
         {
             //切换到站立状态
-            enemy.CurrentState = Enemy.AIState.Idle;
+            enemy.SetState(Enemy.AIState.Idle);
         }
         
     }
 
-    /// <summary>
-    /// 获得最近的那个玩家
-    /// </summary>
-    /// <param name="players"></param>
-    /// <param name="enemy"></param>
-    /// <returns></returns>
-    private Transform GetMinDisPlayer(List<Transform> players,Enemy enemy)
-    {
-        float min = float.MaxValue;
-        Transform res = null;
-        foreach (var transform in players)
-        {
-            float dis = Vector3.Distance(new Vector3(transform.localPosition.x, transform.localPosition.y, 0),
-                new Vector3(enemy.transform.localPosition.x, enemy.transform.localPosition.y, 0));
-            if (dis < min)
-            {
-                min = dis;
-                res = transform;
-            }
-        }
-        return res;
-    }
+   
 
 
 }

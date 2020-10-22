@@ -35,7 +35,7 @@ public class InputManager :Singleton<InputManager>
     #endregion
 
     #region 只读常量，不改变
-    private readonly float COMBO_TIME = 0.5f;
+    private readonly float COMBO_TIME = 0.4f;
     #endregion
     /// <summary>
     /// 输入框点击的上一个对象

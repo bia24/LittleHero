@@ -97,18 +97,11 @@ public class BattleParam
 {
     public int levelUpExp;
     public int levelMax;
-    public List<DifficultyParam> difficultyParams;
+    public float expUpRate;
+    public int perEnemyExp;
+    public int perEnemyMp;
 }
 
-[Serializable]
-public class DifficultyParam
-{
-    public string type; //难度类型 easy、normal、difficult
-    public float pdefenseUpRate;
-    public float mdefenseUpRate;
-    public float damageUpRate;
-    public float reduceRate;//效果减少比例
-}
 
 [Serializable]
 public class BattleCharacterInfos
@@ -121,9 +114,9 @@ public class BattleCharacterInfos
 public class BattleCharacter
 {
     public int id;
-    public string name;
+    public string name; //名称
     public string headIconName;
-    public string objectName;
+    public string objectName; //预制体名称
     public int hp;
     public int mp;
     public int pdefense;
@@ -132,11 +125,30 @@ public class BattleCharacter
     public float pdefenseUpRate;
     public float mdefenseUpRate;
     public float damageUpRate;
-    public int skill1_id; //出招动作1绑定的技能数值
+    /// <summary>
+    /// 一段攻击
+    /// </summary>
+    public int skill1_id; 
+    /// <summary>
+    /// 二段攻击
+    /// </summary>
     public int skill2_id;
+    /// <summary>
+    /// 三段攻击
+    /// </summary>
     public int skill3_id;
+    /// <summary>
+    /// 冲刺攻击
+    /// </summary>
     public int skill4_id;
+    /// <summary>
+    /// 大招攻击
+    /// </summary>
     public int skill5_id;
+    /// <summary>
+    /// 跳跃攻击
+    /// </summary>
+    public int skill6_id;
 }
 
 
@@ -147,16 +159,26 @@ public class SkillInfos
 }
 
 [Serializable]
-public class Skill
+public class Skill:ICloneable
 {
     public int id;
     public string name;
     public string attackType; //魔法或物理
     public string effect; //效果：普通受击、击退、悬空、倒地
     public int damage;
-    public float transformDis;//位移距离
     public float x;
     public float y;
+    public string disType;
+    public int mpCost; //蓝量消耗
+    /// <summary>
+    /// 能量值消耗
+    /// </summary>
+    public int powerCost;
+
+    public object Clone()
+    {
+        return this.MemberwiseClone();
+    }
 }
 
 [Serializable]
@@ -285,5 +307,21 @@ public class Dialogue
     public string type;
     public string iconName;
     public string context;
+}
+
+[Serializable]
+public class Boundary
+{
+    public float moveXMin;
+    public float moveXMax;
+    public float moveYMin;
+    public float moveYMax;
+    public float cameraXMin;
+    public float cameraXMax;
+    public float triggerLeft;
+    public float triggerOne;
+    public float triggerTwo;
+    public float triggerThree;
+    public float triggerFour;
 }
 

@@ -39,13 +39,14 @@ public class Idle : AIStateBase
     {
         //关闭站立动画
         EventCenter.Instance.SendEvent(SGEventType.AnimSetBool, new EventData("Idleing", enemy.gameObject, false));
+        //将自己revert回工厂
+        StateFactory.Instance.Revert(this);
     }
 
     public override void Update(Enemy enemy)
     {
-        if (!enemy.IsInState(State.Idle) || enemy.IsInTransforming())
-            return;//如果没有在站立动画或者正在转换，不进行逻辑判断。不可能处在idle转换到其他动画的过程中，因为这里不设置动画护法，只
-        //设置状态。设置完就return出update了。下一帧，会执行exit和新状态的enter和update逻辑。
+        if (enemy.IsInTransforming())
+            return;//如果正在转换，不进行逻辑判断。
 
         if (reaction) //若正处于反应至攻击状态
         {
@@ -55,19 +56,20 @@ public class Idle : AIStateBase
             {
                 reaction = false;
                 //切换到攻击状态
-                enemy.CurrentState = Enemy.AIState.Attack;
+                enemy.SetState(Enemy.AIState.Attack); 
                 //重置攻击间隔时间
                 attackIntervalCount = 0.0f;
                 return;
             }
             return;
         }
-
-     
+ 
         List<Transform>players= enemy.SearchTarget();
-        Transform target = GetMinDisPlayerWithingDis(players,enemy);
+        Transform target = enemy.GetMinDisPlayerWithingDis(players);
         if (target != null) //搜索范围内 玩家 不为空，开启反应至攻击状态
         {
+            //面向调整
+            enemy.Rotate(Vector3.Normalize(target.position-enemy.transform.position));
             reaction = true;
             return;
         }
@@ -80,6 +82,7 @@ public class Idle : AIStateBase
 
         if (idleTimeCount < enemy.GetIdleTime()&&Time.frameCount%enemy.GetAttackFrameRate()==0)
         {
+            Random.InitState(System.DateTime.Now.Millisecond);
             float value= Random.Range(0.0f, 1.0f);
             if (value < enemy.GetAttackPR())
             {
@@ -89,37 +92,12 @@ public class Idle : AIStateBase
         }
         else if(idleTimeCount > enemy.GetIdleTime())
         {
-            enemy.CurrentState = Enemy.AIState.Walk;
+            enemy.SetState(Enemy.AIState.Walk);
             return;
         }
     }
 
-
-    /// <summary>
-    /// 返回一个在搜索范围内的最近player
-    /// </summary>
-    /// <param name="players"></param>
-    /// <param name="enemy"></param>
-    /// <returns></returns>
-    protected Transform GetMinDisPlayerWithingDis(List<Transform> players, Enemy enemy)
-    {
-        float min = float.MaxValue;
-        Transform res = null;
-        foreach (var transform in players)
-        {
-            float dis = Vector3.Distance(new Vector3(transform.localPosition.x, transform.localPosition.y, 0),
-                new Vector3(enemy.transform.localPosition.x, enemy.transform.localPosition.y, 0));
-            if (dis < min)
-            {
-                min = dis;
-                res = transform;
-            }
-        }
-        if (min < enemy.GetSearchDistance())
-            return res;
-        else
-            return null;
-    }
+   
 
 
 }

@@ -11,27 +11,45 @@ public class EnemyGenerator : MonoBehaviour
 {
 
     /// <summary>
-    /// 开关
+    /// 产兵开关
     /// </summary>
     private bool trigger;
 
     private int currentTimes;
 
-    private void Awake()
+    private float timeCount = 0f;
+
+    private readonly float delay = 0.5f;
+
+    public void Init()
     {
         //参数初始化
-        trigger = true;
-        currentTimes = 1; 
-    }
-
-
-
-    private void OffEnemyGenTrigger()
-    {
         trigger = false;
+        currentTimes = 1;
+        timeCount = 0f;
+        RegisterEvent();
     }
 
-    private void OnEnemyGenTrigger()
+    private void RegisterEvent()
+    {
+        EventCenter.Instance.RegistListener(SGEventType.NextTimeEnemyGenerate, OnEnemyGenTrigger);
+        EventCenter.Instance.RegistListener(SGEventType.BattleBossDie, OnBossDieListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattleDialogueExit, OnEnemyGenTrigger);
+    }
+
+    private void RemoveEvent()
+    {
+        EventCenter.Instance.RemoveListener(SGEventType.NextTimeEnemyGenerate, OnEnemyGenTrigger);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleBossDie, OnBossDieListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleDialogueExit, OnEnemyGenTrigger);
+    }
+
+   private  void OnBossDieListener(EventData data)
+    {
+        currentTimes = 1;
+    }
+
+    private void OnEnemyGenTrigger(EventData data)
     {
         trigger = true;
     }
@@ -42,9 +60,9 @@ public class EnemyGenerator : MonoBehaviour
 
         if (currentTimes > plan.Count)
         {
-            //本关卡已经产完兵了
+            //防止这关没有boss无法切入下一关
+            Debug.LogWarning("this level has no enemy create any more");
             trigger = false;
-            currentTimes = 1;
             return;
         }
 
@@ -54,16 +72,31 @@ public class EnemyGenerator : MonoBehaviour
         {
             EventCenter.Instance.SendEvent(SGEventType.CreateEnemy, new EventData(detail, null));
         }
+
+        trigger = false;//每次产兵成功trigger设为false。等待下一次开启
+        timeCount = 0f;
+       
     }
 
+   
 
     //敌人生成循环
     private void Update()
     {
         if (trigger) //由trigger控制
         {
+            if (timeCount < delay)
+            {
+                timeCount += Time.deltaTime;
+                return;
+            }
             CreateEnemy();
         }
+    }
+
+    private void OnDestroy()
+    {
+        RemoveEvent();
     }
 
 }

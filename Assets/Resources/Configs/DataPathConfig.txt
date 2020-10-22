@@ -43,6 +43,10 @@
 		{
 			"DataName":"Dialogues",
 			"DataPath":"Configs/Dialogues"
+		},
+		{
+			"DataName":"Boundary",
+			"DataPath":"Configs/BattleGroundParam"
 		}
     ]
 }

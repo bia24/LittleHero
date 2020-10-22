@@ -19,7 +19,6 @@ public class GameController :Singleton<GameController>
         EventCenter.Instance.RegistListener(SGEventType.UIPlayerNumberButtomClick, SetPlayerNumber);
         EventCenter.Instance.RegistListener(SGEventType.UIDifficultyButtomClick, SetGameDifficulty);
         EventCenter.Instance.RegistListener(SGEventType.UIChangeCharacterClick, CharacterChangeListener);
-        EventCenter.Instance.RegistListener(SGEventType.NextDialogue, NextDialogueRank);
     }
 
     /// <summary>
@@ -150,19 +149,50 @@ public class GameController :Singleton<GameController>
         return GameManager.Instance.GetDialogue(level, rank);
     }
     /// <summary>
-    /// 设置下一个对话计数
+    /// 设置下一个对话计数，返回是否到下一关卡了
     /// </summary>
-    private void NextDialogueRank(EventData data)
+    public bool NextDialogueRank()
     {
         int level = BattleController.Instance.GetCurrentLevel();
         int max = GameManager.Instance.GetDialogueListCount(level);//获得本关卡所有的对话数目
         int rank = GameManager.Instance.GetCurrentDialogueRank();
-        if (rank == max-1)
+        if (rank == max - 1)
         {
+            //下一关了，重置顺序
             GameManager.Instance.SetDialogueRank(0);
-            EventCenter.Instance.SendEvent(SGEventType.DialogueRankReset, null);
+            return true;
         }
         else
+        {
             GameManager.Instance.SetDialogueRank(rank + 1);
+            return false;
+        }
     }
+
+    /// <summary>
+    /// 停止时间
+    /// </summary>
+    public void StopTime()
+    {
+        Time.timeScale = 0;
+    }
+    /// <summary>
+    /// 恢复时间
+    /// </summary>
+    public void ResumeTime()
+    {
+        Time.timeScale = 1;
+    }
+    /// <summary>
+    /// 在场景切换时，需要清除缓存，避免空指针
+    /// </summary>
+    public void ClearCache()
+    {
+        //对象池要清空。因为场景中有对象会被清除，有null指针
+        PoolManager.Instance.ClearPool();
+        //AssetManager中的换粗你也要清空。也会有null指针对象被加载过
+       AssetManager.Instance.ClearAssetsCaches();
+    }
+
+
 }

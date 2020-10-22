@@ -61,13 +61,42 @@ namespace SGModule
         /// 更换角色点击
         /// </summary>
         UIChangeCharacterClick=1011,
-      
-       
+        /// <summary>
+        /// 战场指引   
+        /// </summary>
+        UIBattleDirTip=1012,
+        /// <summary>
+        /// 游戏暂停面板被唤出
+        /// </summary>
+        UIPausePanel=1013,
+        /// <summary>
+        /// 在游戏进行中唤出游戏设置菜单
+        /// </summary>
+        UIGameSettingOnGaming=1014,
+        /// <summary>
+        /// 战斗面板消失
+        /// </summary>
+        UIBattlePanelHide=1015,
+        /// <summary>
+        /// 黑屏渐变面板完成工作
+        /// </summary>
+        UIDarkPanelFinish=1016,
+        /// <summary>
+        /// 黑屏渐变UI唤出
+        /// </summary>
+        UIDarkPanel=1017,
+        /// <summary>
+        /// 战斗结束对话框
+        /// </summary>
+        UIBattleEnd=1018,
+
+
+
        //声音从2000开始
        /// <summary>
        /// 主bgm播放
        /// </summary>
-       SoundBGM=2000,
+        SoundBGM =2000,
        /// <summary>
        /// 普通音乐播放
        /// </summary>
@@ -104,14 +133,6 @@ namespace SGModule
        /// 游戏难度 变更
        /// </summary>
        DifficultyChange=3002,
-       /// <summary>
-       /// 下一段对话的id
-       /// </summary>
-        NextDialogue=3006,
-        /// <summary>
-        /// 对话顺序已经到了下一level了
-        /// </summary>
-        DialogueRankReset=3007,
         /// <summary>
         /// 游戏管理器运行时数据初始化
         /// </summary>
@@ -181,6 +202,10 @@ namespace SGModule
        /// 方向空指令
        /// </summary>
        CommandNoneDir=5013,
+       /// <summary>
+       /// esc 按键被按下
+       /// </summary>
+       EscKeyDown=5014,
       
 
 
@@ -227,13 +252,73 @@ namespace SGModule
         /// 攻击判定
         /// </summary>
         AttackJudge=7005,
+        /// <summary>
+        /// 战斗中血量变化
+        /// </summary>
+        BattlePlayerHpChange =7006,
+        /// <summary>
+        /// 战斗中魔法值变化
+        /// </summary>
+        BattlePlayerMpChange=7007,
+        /// <summary>
+        /// 战斗等级变化
+        /// </summary>
+        BattlePlayerLevelChange = 7008,
+        /// <summary>
+        /// 战斗中能量变化
+        /// </summary>
+        BattlePlayerPowerChange = 7009,
+        /// <summary>
+        /// 战斗中成功攻击敌人
+        /// </summary>
+        BattleAttackSuccess=7010,
+        /// <summary>
+        /// 设置战场上的相机
+        /// </summary>
+        BattleCameraSet=7012,
+        /// <summary>
+        /// 敌人死亡通知
+        /// </summary>
+        BattleEnemyDie=7013,
+        /// <summary>
+        /// 玩家死亡
+        /// </summary>
+        BattlePlayerDie=7014,
+        /// <summary>
+        /// 战斗暂停
+        /// </summary>
+        BattlePause=7015,
+        /// <summary>
+        /// 战斗暂停恢复
+        /// </summary>
+        BattlePauseExit=7016,
+        /// <summary>
+        /// 产生下一波兵
+        /// </summary>
+        NextTimeEnemyGenerate=7018,
+        /// <summary>
+        /// boss死了
+        /// </summary>
+        BattleBossDie=7019,
+        /// <summary>
+        /// 重置玩家状态
+        /// </summary>
+        BattleResetPlayerState=7020,
+        /// <summary>
+        /// 对话出现
+        /// </summary>
+        BattleDialogueAppear=7021,
+        /// <summary>
+        /// 对话退出
+        /// </summary>
+        BattleDialogueExit= 7022,
 
 
         //动画相关从8000开始
         /// <summary>
         /// 动画回调注册
         /// </summary>
-        AnimCallbackRigister=8000,
+        AnimCallbackRigister = 8000,
         /// <summary>
         /// 动画转换 trigger
         /// </summary>

@@ -9,30 +9,18 @@ public class JinZhan : Enemy
     {
         List<AnimCallBackEntity> res = new List<AnimCallBackEntity>();
         //动作结束回到站立 动作回调
-        res.Add(new AnimCallBackEntity("Enemy1_Attack", "FinishedToIdle", 1.0f, AnimEventParamType.String,"Attack")); //exitime 1.0
-        
+        res.Add(new AnimCallBackEntity("Enemy1_Attack", "FinishedToIdle", 1.0f, AnimEventParamType.Null)); //exitime 1.0
+        res.Add(new AnimCallBackEntity("Enemy1_BeAttacked", "FinishedToIdle", 1.0f, AnimEventParamType.Null)); //exitime 1.0
+        res.Add(new AnimCallBackEntity("Enemy1_Up", "FinishedToIdle", 0.8f, AnimEventParamType.Null)); //exitime 0.85 
         //声音回调
-        //res.Add(new AnimCallBackEntity("Player1_Attack1", "AttackSound", 0.5f, AnimEventParamType.String, "Player1_Attack_First|1.0"));
-        
+        res.Add(new AnimCallBackEntity("Enemy1_Attack", "AttackSound", 0.35f, AnimEventParamType.String, "Enemy1_Attack|1.0"));
+        //攻击判定
+         BattleCharacter bc = BattleController.Instance.GetBattleCharacter(GetCharacterId());
+        res.Add(new AnimCallBackEntity("Enemy1_Attack", "AttackJudge", 0.4f, AnimEventParamType.Int, bc.skill1_id)); //int skill id
         return res;
     }
 
-    protected override void InitAnimStateName()
-    {
-        AddAnimName(State.Idle, "Enemy1_Idle");
-        AddAnimName(State.Walk, "Enemy1_Walk");
-        AddAnimName(State.AttackFirst, "Enemy1_Attack");
-        AddAnimName(State.BeAttackNormal, "Enemy1_BeAttacked");
-        AddAnimName(State.BeAttackFloor, "Enemy1_ToFloor");
-        AddAnimName(State.BeAttackOver, "Enemy1_ToFloor");
-        AddAnimName(State.BeAttackTransform, "Enemy1_BeAttacked");
-        AddAnimName(State.BeDie, "Enemy1_ToFloor");
-    }
-
-    protected override void AnimJudge(string effect)
-    {
-        
-    }
+   
 
 
 }

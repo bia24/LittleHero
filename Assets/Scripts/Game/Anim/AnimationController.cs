@@ -81,5 +81,11 @@ public class AnimationController :Singleton<AnimationController>
         Animator animator = anim.GetAnimator();
         return AnimManager.Instance.GetAnimtionClip(animator, 0, name).length;
     }
+
+    public void ResetAllTrigger(IAnim anim)
+    {
+        Animator animator = anim.GetAnimator();
+        AnimManager.Instance.ResetAllTrigger(animator);
+    }
 }
 

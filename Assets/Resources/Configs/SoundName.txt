@@ -22,8 +22,8 @@
 			"name":"Appear"
 		},
 		{
-			"type":"NormalBattle",
-			"name":"NormalBattle"
+			"type":"Level1",
+			"name":"Level1"
 		},
 		{
 			"type":"Player1_Attack_First",
@@ -48,6 +48,94 @@
 		{
 			"type":"Player1_SkillAttack_Sky",
 			"name":"Player1_SkillAttack_Sky"
+		},
+		{
+			"type":"Player2_Attack_First",
+			"name":"Player2_Attack_First"
+		},
+		{
+			"type":"Player2_Attack_Second",
+			"name":"Player2_Attack_Second"
+		},
+		{
+			"type":"Player2_Attack_Third",
+			"name":"Player2_Attack_Third"
+		},
+		{
+			"type":"Player2_Run_Attack",
+			"name":"Player2_Run_Attack"
+		},
+		{
+			"type":"Player2_SkillAttack_UpDown",
+			"name":"Player2_SkillAttack_UpDown"
+		},
+		{
+			"type":"Player2_SkillAttack_Sky",
+			"name":"Player2_SkillAttack_Sky"
+		},
+		{
+			"type":"Boss1_Attack1",
+			"name":"Boss1_Skill1"
+		},
+		{
+			"type":"Boss1_Attack2",
+			"name":"Boss1_Skill2"
+		},
+		{
+			"type":"Boss1_Attack3",
+			"name":"Boss1_Skill3"
+		},
+		{
+			"type":"Boss2_Attack1",
+			"name":"Boss2_Skill1"
+		},
+		{
+			"type":"Boss2_Attack2",
+			"name":"Boss2_Skill2"
+		},
+		{
+			"type":"Boss2_Attack3",
+			"name":"Boss2_Skill3"
+		},
+		{
+			"type":"Boss2_Attack4",
+			"name":"Boss2_Skill4"
+		},
+		{
+			"type":"Enemy1_Attack",
+			"name":"Enemy1_Attack"
+		},
+		{
+			"type":"Enemy2_Attack",
+			"name":"Enemy2_Attack"
+		},
+		{
+			"type":"Enemy3_Attack",
+			"name":"Enemy3_Attack"
+		},
+		{
+			"type":"Win_Sound",
+			"name":"Win"
+		},
+		{
+			"type":"Lose_Sound",
+			"name":"Lose"
+		},
+		{
+			"type":"BossDie",
+			"name":"BossDie"
+		},
+		{
+			"type":"Level2",
+			"name":"Level2"
+		},
+		{
+			"type":"PlayerDie",
+			"name":"PlayerDie"
+		},
+		{
+			"type":"Level3",
+			"name":"Level3"
 		}
 
 		

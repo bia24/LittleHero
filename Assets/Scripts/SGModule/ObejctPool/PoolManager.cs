@@ -70,15 +70,15 @@ namespace SGModule
         /// </summary>
         /// <param name="name"></param>
         /// <param name="go"></param>
-        public void RevertPool(string name,GameObject go)
+        public void RevertPool(string resourcesName, GameObject go)
         {
-            if(!hasPool(name))
+            if(!hasPool(resourcesName))
             {
                 Debug.LogError("not has this pool , create first");
                 return;
             }
             go.SetActive(false);
-            pools[name].addObejct(go);
+            pools[resourcesName].addObejct(go);
         }
 
         /// <summary>

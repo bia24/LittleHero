@@ -33,6 +33,28 @@ public class UIBattlePanel : UIBase
         GetWidget("BattleEnemyHead").SetActive(false);
         GetWidget("BattleEnemyHead_Player2").SetActive(false);
         GetWidget("Dialogue").SetActive(false);
+        GetWidget("ComboHit_Player1").SetActive(false);
+        GetWidget("ComboHit_Player2").SetActive(false);
+        //添加脚本
+        if (GetWidget("ComboHit_Player1").GetComponent<UIComboHit>() == null)
+        {
+            UIComboHit hit= GetWidget("ComboHit_Player1").AddComponent<UIComboHit>();
+            hit.Initialize();    
+        }
+        if (GetWidget("ComboHit_Player2").GetComponent<UIComboHit>() == null)
+        {
+            UIComboHit hit = GetWidget("ComboHit_Player2").AddComponent<UIComboHit>();
+            hit.Initialize();
+        }
+
+        if (GetWidget("Forward").GetComponent<UIDirTip>() == null)
+        {
+            GetWidget("Forward").AddComponent<UIDirTip>();
+        }
+        if (GetWidget("Back").GetComponent<UIDirTip>() == null)
+        {
+            GetWidget("Back").AddComponent<UIDirTip>();
+        }
 
     }
 
@@ -40,14 +62,30 @@ public class UIBattlePanel : UIBase
     {
         EventCenter.Instance.RegistListener(SGEventType.PlayerInitFinished,PlayerHeadPanelShow);
         EventCenter.Instance.RegistListener(SGEventType.UIDialogue, ShowDiaLoguePanel);
-        EventCenter.Instance.RegistListener(SGEventType.DialogueRankReset, HideDialoguePanel);
+        EventCenter.Instance.RegistListener(SGEventType.BattleAttackSuccess, ShowComboHit);
+        EventCenter.Instance.RegistListener(SGEventType.BattleAttackSuccess, ShowEnemyHead);
+        //战斗时，动态变化的监听
+        EventCenter.Instance.RegistListener(SGEventType.BattlePlayerHpChange, SetPlayerHpBarListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattlePlayerMpChange, SetPlayerMpBarListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattlePlayerLevelChange, SetPlayerLevelLableListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattlePlayerPowerChange, SetPlayerPowerIconListener);
+        EventCenter.Instance.RegistListener(SGEventType.UIBattleDirTip, ShowDirTipListener);
+        EventCenter.Instance.RegistListener(SGEventType.BattleBossDie, HideEnemyHeadListener);
+       
     }
 
     protected override void CancelListenerFromEventCenter()
     {
         EventCenter.Instance.RemoveListener(SGEventType.PlayerInitFinished, PlayerHeadPanelShow);
         EventCenter.Instance.RemoveListener(SGEventType.UIDialogue, ShowDiaLoguePanel);
-        EventCenter.Instance.RemoveListener(SGEventType.DialogueRankReset, HideDialoguePanel);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleAttackSuccess, ShowEnemyHead);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleAttackSuccess, ShowComboHit);
+        EventCenter.Instance.RemoveListener(SGEventType.BattlePlayerHpChange, SetPlayerHpBarListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattlePlayerMpChange, SetPlayerMpBarListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattlePlayerLevelChange, SetPlayerLevelLableListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattlePlayerPowerChange, SetPlayerPowerIconListener);
+        EventCenter.Instance.RemoveListener(SGEventType.UIBattleDirTip, ShowDirTipListener);
+        EventCenter.Instance.RemoveListener(SGEventType.BattleBossDie, HideEnemyHeadListener);
     }
     /// <summary>
     /// 玩家的头像面板显示
@@ -108,7 +146,7 @@ public class UIBattlePanel : UIBase
     {
         //参数1是id，参数2是血量
         int playerId = p.GetPlayerId();
-        float value = p.GetHp();
+        float value = p.GetHpRate();
         if (playerId == 0)
         {
             //玩家1
@@ -121,6 +159,23 @@ public class UIBattlePanel : UIBase
         }
     }
     /// <summary>
+    /// 设置血量的事件中心监听
+    /// </summary>
+    /// <param name="data"></param>
+    private void SetPlayerHpBarListener(EventData data)
+    {
+        SetPlayerHpBar(data.Sender.GetComponent<Player>());
+    }
+    /// <summary>
+    /// 设置蓝量的事件中心监听
+    /// </summary>
+    /// <param name="data"></param>
+    private void SetPlayerMpBarListener(EventData data)
+    {
+        SetPlayerMpBar(data.Sender.GetComponent<Player>());
+    }
+
+    /// <summary>
     /// 设置蓝量
     /// </summary>
     /// <param name="data"></param>
@@ -128,7 +183,7 @@ public class UIBattlePanel : UIBase
     {
         //参数1是id，参数2是血量
         int playerId = p.GetPlayerId();
-        float value = p.GetMp();
+        float value = p.GetMpRate();
         if (playerId == 0)
         {
             //玩家1
@@ -140,6 +195,16 @@ public class UIBattlePanel : UIBase
             GetWidget<Slider>("MPBar_Player2").value = Mathf.Clamp(value, 0.0f, 1f);
         }
     }
+
+    /// <summary>
+    /// 设置玩家等级监听
+    /// </summary>
+    /// <param name="data"></param>
+    private void SetPlayerLevelLableListener(EventData data)
+    {
+        SetPlayerLevel(data.Sender.GetComponent<Player>());
+    }
+
     /// <summary>
     /// 设置玩家等级
     /// </summary>
@@ -160,6 +225,16 @@ public class UIBattlePanel : UIBase
             GetWidget<Text>("Lv_Player2").text = "Lv." + level;
         }
     }
+
+    /// <summary>
+    /// 设置玩家能量图标的监控
+    /// </summary>
+    /// <param name="data"></param>
+    private void SetPlayerPowerIconListener(EventData data)
+    {
+        SetPlayerPowerNumber(data.Sender.GetComponent<Player>());
+    }
+
     /// <summary>
     /// 设置玩家能量值
     /// </summary>
@@ -174,6 +249,11 @@ public class UIBattlePanel : UIBase
             //玩家1
             switch (power)
             {
+                case 0:
+                    GetWidget("Power1").SetActive(false);
+                    GetWidget("Power2").SetActive(false);
+                    GetWidget("Power3").SetActive(false);
+                    break;
                 case 1:
                     GetWidget("Power1").SetActive(true);
                     GetWidget("Power2").SetActive(false);
@@ -196,6 +276,11 @@ public class UIBattlePanel : UIBase
             //玩家2
             switch (power)
             {
+                case 0:
+                    GetWidget("Power1_Player2").SetActive(false);
+                    GetWidget("Power2_Player2").SetActive(false);
+                    GetWidget("Power3_Player2").SetActive(false);
+                    break;
                 case 1:
                     GetWidget("Power1_Player2").SetActive(true);
                     GetWidget("Power2_Player2").SetActive(false);
@@ -236,6 +321,8 @@ public class UIBattlePanel : UIBase
         GetWidget("Hand").GetComponent<RectTransform>().DOAnchorPos(new Vector2(-46.30078f, 100f), 0.4f).SetLoops(-1, LoopType.Yoyo).SetId("Hand");
         //模拟一次点击
         DialogueClickLogic();
+        //对话出现通知
+        EventCenter.Instance.SendEvent(SGEventType.BattleDialogueAppear, null);
     }
 
     //对话框被点击
@@ -259,7 +346,8 @@ public class UIBattlePanel : UIBase
             //关闭动画
             DOTween.Kill("Hand");
             DOTween.Kill("HandEffect");
-            //发送 dialoguefinish 事件
+            //对话退出
+            EventCenter.Instance.SendEvent(SGEventType.BattleDialogueExit, null);
             return;
         }
         Dialogue d = GameController.Instance.GetCurrentDialogue();
@@ -288,8 +376,8 @@ public class UIBattlePanel : UIBase
             GetWidget<RawImage>("PlayerDialogue").texture = icon;
         }
 
-        //改变对话次序
-        EventCenter.Instance.SendEvent(SGEventType.NextDialogue, null);
+        //下一次对话的次序，返回是否下一关卡了。
+        hideDialogueTrigger=GameController.Instance.NextDialogueRank();
     }
 
     /// <summary>
@@ -300,5 +388,84 @@ public class UIBattlePanel : UIBase
     {
         hideDialogueTrigger = true;
     }
+    /// <summary>
+    /// 显示敌人战斗信息
+    /// </summary>
+    /// <param name="data"></param>
+    private void ShowEnemyHead(EventData data)
+    {
+        //param1: attacker (Player)
+        //sender: enemy
+        int playerId = (data.Param as Player).GetPlayerId();
+        Enemy enemy = data.Sender.GetComponent<Enemy>();
+
+        int characterId = enemy.GetCharacterId();
+        BattleCharacter bc = BattleController.Instance.GetBattleCharacter(characterId);
+
+        string headIconName = bc.headIconName;
+        Sprite headIcon = TextureManager.Instance.GetTexture<Sprite>(headIconName);
+        string enemyName = bc.name;
+        float hp = enemy.GetHpRate();
+
+        if (playerId == 0)
+        {
+            GetWidget("BattleEnemyHead").SetActive(true);
+            GetWidget<Image>("HeadIcon_E").sprite = headIcon;
+            GetWidget<Text>("Text_E").text = enemyName;
+            GetWidget<Slider>("HPBar_E").value = hp;
+        }
+        else
+        {
+            GetWidget("BattleEnemyHead_Player2").SetActive(true);
+            GetWidget<Image>("HeadIcon_E_Player2").sprite = headIcon;
+            GetWidget<Text>("Text_E_Player2").text = enemyName;
+            GetWidget<Slider>("HPBar_E_Player2").value = hp;
+        }
+    }
+
+    /// <summary>
+    /// 连击显示
+    /// </summary>
+    /// <param name="data"></param>
+    private void ShowComboHit(EventData data)
+    {
+        Player  player = data.Param as Player;
+        string name = player.GetPlayerId() == 0 ? "ComboHit_Player1":"ComboHit_Player2";
+        GetWidget(name).GetComponent<UIComboHit>().AddOneHit();
+    }
+    /// <summary>
+    /// 路标显示
+    /// </summary>
+    /// <param name="data"></param>
+    private void ShowDirTipListener(EventData data)
+    {
+        int dir = (int)data.Param;
+        if (dir == 0)
+        {
+            GetWidget("Forward").SetActive(false);
+            GetWidget("Back").SetActive(false);
+        }
+        else if (dir==-1)
+        {
+            GetWidget("Back").SetActive(true);
+            GetWidget("Forward").SetActive(false);
+        }
+        else if (dir == 1)
+        {
+            GetWidget("Forward").SetActive(true);
+            GetWidget("Back").SetActive(false);
+        }
+        
+    }
+    /// <summary>
+    /// 隐藏敌人头像面板
+    /// </summary>
+    /// <param name="data"></param>
+    private void HideEnemyHeadListener(EventData data)
+    {
+        GetWidget("BattleEnemyHead").SetActive(false);
+        GetWidget("BattleEnemyHead_Player2").SetActive(false);
+    }
+
 
 }

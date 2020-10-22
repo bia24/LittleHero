@@ -19,6 +19,11 @@ public class UIController:Singleton<UIController>
         EventCenter.Instance.RegistListener(SGEventType.UILoadScenePanel, ShowLoadScenePanelListener);
         EventCenter.Instance.RegistListener(SGEventType.UILoadScenePanelHide, LoadScenePanelHideListener);
         EventCenter.Instance.RegistListener(SGEventType.UIBattlePanel, ShowBattlePanelListener);
+        EventCenter.Instance.RegistListener(SGEventType.EscKeyDown, PausePanelListener);
+        EventCenter.Instance.RegistListener(SGEventType.UIGameSettingOnGaming, ShowGameSettingOnGamingListener);
+        EventCenter.Instance.RegistListener(SGEventType.UIBattlePanelHide, HideBattlePanelListener);
+        EventCenter.Instance.RegistListener(SGEventType.UIDarkPanel, ShowDarkPanelListener);
+        EventCenter.Instance.RegistListener(SGEventType.UIBattleEnd, ShowBattleEndPanelListener);
     }
 
     /// <summary>
@@ -100,6 +105,52 @@ public class UIController:Singleton<UIController>
     private void ShowBattlePanelListener(EventData data)
     {
         UIManager.Instance.ShowPanel<UIBattlePanel>("BattlePanel",UIManager.UILayer.Mid);
+    }
+    /// <summary>
+    /// 战斗面板消失
+    /// </summary>
+    /// <param name="data"></param>
+    private void HideBattlePanelListener(EventData data)
+    {
+        UIManager.Instance.HidePanel("BattlePanel");
+    }
+    /// <summary>
+    /// 游戏暂停界面 唤出
+    /// </summary>
+    /// <param name="data"></param>
+    private void PausePanelListener(EventData data)
+    {
+        UIPauseGaming p = UIManager.Instance.GetPanel<UIPauseGaming>("PausePanel");
+        if (p!=null&&p.IsActiveInHierachy())
+        {
+            UIManager.Instance.HidePanel("PausePanel");
+        }
+        else
+        {
+            UIManager.Instance.ShowPanel<UIPauseGaming>("PausePanel", UIManager.UILayer.Top);
+        }
+    }
+
+    private void ShowGameSettingOnGamingListener(EventData data)
+    {
+        UIManager.Instance.ShowPanel<UIGameSettingsFromGaming>("GameSettingsPanelFromGaming", UIManager.UILayer.Top);
+    }
+
+
+    private void ShowDarkPanelListener(EventData data)
+    {
+        UIManager.Instance.ShowPanel<UIDarkPanel>("DarkPanel", UIManager.UILayer.Top);
+    }
+
+
+    private void ShowBattleEndPanelListener(EventData data)
+    {
+        UIBase target = UIManager.Instance.GetPanel<UIBattleEnd>("BattleEndingPanel");
+        if (target != null && target.IsActiveInHierachy())
+            return;
+        UIManager.Instance.ShowPanel<UIBattleEnd>("BattleEndingPanel", UIManager.UILayer.Top);
+        UIBattleEnd p = UIManager.Instance.GetPanel<UIBattleEnd>("BattleEndingPanel");
+        p.ShowText((bool)data.Param,data.Param2 as string);
     }
 }
 

@@ -13,6 +13,8 @@ public enum DifficultyType
     Normal,
     Hard
 }
+
+
 /// <summary>
 /// 玩家id和角色id的映射参数
 /// </summary>
@@ -36,6 +38,7 @@ public class GameManager :Singleton<GameManager>
     /// 关卡-对话索引
     /// </summary>
     private Dictionary<int, List<Dialogue>> dialogues = new Dictionary<int, List<Dialogue>>();
+    
     #endregion
 
     #region 非配置文件中读入的游戏设置，运行时初始化，会随游戏进程改变
@@ -55,6 +58,7 @@ public class GameManager :Singleton<GameManager>
     /// 对话计数器
     /// </summary>
     private int dialogueRank;
+  
     #endregion
 
     /// <summary>
@@ -138,6 +142,7 @@ public class GameManager :Singleton<GameManager>
         }
       
     }
+  
     /// <summary>
     /// 获得游戏难度
     /// </summary>

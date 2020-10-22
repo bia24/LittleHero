@@ -13,8 +13,7 @@ namespace SGModule
         public override void StartTask(LoaderInParam param)
         {
             base.StartTask(param);
-            
-            Debug.Log("Start SyncLoading asset from " + param.Url);
+
             //从resources文件夹中加载
             string context = AssetManager.Instance.LoadObject<TextAsset>(param.Url).text;
             if (context == null)
@@ -22,7 +21,6 @@ namespace SGModule
                 Debug.LogError("syncloading from "+param.Url+" failed!!");
                 return;
             }
-            Debug.Log("SyncLoading asset finished ");
 
             //调用回调函数
             param.Callback.Invoke(context);
